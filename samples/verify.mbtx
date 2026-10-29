@@ -20,6 +20,7 @@ async fn main {
   let base = ["run","bin/formferry","--target",target,"--"]
   command(base + ["fill","samples/choices.pdf","samples/comb.json",dir+"/comb.pdf"],true)
   command(base + ["fields","samples/project.pdf"],true)
+  command(base + ["schema","samples/choices.pdf"],true)
   command(base + ["validate-complete","samples/project.pdf","samples/project.json"],true)
   command(base + ["fill","samples/project.pdf","samples/project.json",output],true)
   let original = @fs.read_file(output).binary()

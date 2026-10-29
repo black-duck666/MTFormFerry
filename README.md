@@ -4,6 +4,8 @@
 
 [Preflight validation](docs/validate.md) reports multiple field errors in one pass before saving, including optional Required checks against candidate values.
 
+[Template metadata](docs/schema.md) exports real field constraints and choice labels for building an input mapper or review screen.
+
 [Template alignment](docs/alignment.md) preserves left, centered and right-aligned text, including inherited settings and each multiline row.
 
 [Optional text fitting](docs/fit.md) shrinks overflowing ASCII text down to a 6pt floor while retaining the exact value; the default still rejects overflow.

@@ -37,6 +37,7 @@ pub fn Form::missing_required(Self) -> Array[String] raise
 pub fn Form::open(Bytes) -> Self raise
 pub fn Form::records_from_csv(Self, String) -> Array[Map[String, Value]] raise
 pub fn Form::reset(Self, Array[String], complete? : Bool, fit_text? : Bool) -> Bytes raise
+pub fn Form::schema_json(Self) -> Json raise
 pub fn Form::validate(Self, Map[String, Value], complete? : Bool, fit_text? : Bool) -> Array[ValidationIssue] raise
 pub fn Form::value(Self, String) -> Value? raise
 pub fn Form::values_json(Self) -> Json raise

@@ -19,6 +19,14 @@ async fn main {
     fail("--fit-text is only supported for fill, batch and reset commands")
   }
   match args {
+    [_, "schema", path] => {
+      guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
+      println(
+        @form.Form::open(@fs.read_file(path).binary())
+        .schema_json()
+        .stringify(indent=2),
+      )
+    }
     [_, "validate" | "validate-complete", input, data] => {
       guard @fs.file_size(input) <= 33554432L && @fs.file_size(data) <= 1048576L else {
         fail("PDF or JSON exceeds input limit")
