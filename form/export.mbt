@@ -48,7 +48,7 @@ fn Form::checked_current(self : Form, c : Control) -> Value? raise {
         }
       }
     }
-    Dropdown => {
+    Dropdown | Listbox => {
       let options = dropdown_options(self.document, c)
       if value is Some(Selected(s)) {
         let indices : Array[@syntax.PdfObject] = []

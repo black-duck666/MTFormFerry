@@ -120,7 +120,7 @@ pub fn Form::records_from_csv(
           }
           Checked(s == "true")
         }
-        Radio | Dropdown => {
+        Radio | Dropdown | Listbox => {
           guard self.choices(c.info.name).contains(s) else {
             fail("CSV record \{index}, \{c.info.name}: unknown choice export")
           }

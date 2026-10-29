@@ -22,8 +22,16 @@ fn dropdown_options(
   doc : @pdf.PdfDocument,
   c : Control,
 ) -> Array[(String, String)] raise {
-  guard c.flags >= 131072 && (c.flags & 131079) == c.flags else {
-    fail(c.info.name + ": editable or multi-select choice flags unsupported")
+  guard (
+      c.info.kind == Dropdown &&
+      c.flags >= 131072 &&
+      (c.flags & 131079) == c.flags
+    ) ||
+    (c.info.kind == Listbox && c.flags >= 0 && (c.flags & 7) == c.flags) else {
+    fail(
+      c.info.name +
+      ": editable, sorted or multi-select choice flags unsupported",
+    )
   }
   guard inherited(doc, c.object, "Opt") is Some(PdfArray(opts)) &&
     !opts.is_empty() &&
@@ -71,10 +79,24 @@ fn fill_dropdown(
   guard index >= 0 else {
     fail(c.info.name + ": unknown dropdown choice " + selected)
   }
-  fill_text(doc, c, options[index].1, stored_value=selected, choice=true)
+  fill_text(
+    doc,
+    c,
+    options[index].1,
+    stored_value=selected,
+    choice=true,
+    list_options=if c.info.kind == Listbox { options.map(p => p.1) } else { [] },
+    list_index=index,
+  )
   let field = doc.direct(PdfIndirect(c.number))
   doc.add_object_given_number(
     c.number,
-    field.add_dict_entry(name("I"), PdfArray([PdfInteger(index)])),
+    if c.info.kind == Listbox {
+      field
+      .add_dict_entry(name("I"), PdfArray([PdfInteger(index)]))
+      .add_dict_entry(name("TI"), PdfInteger(0))
+    } else {
+      field.add_dict_entry(name("I"), PdfArray([PdfInteger(index)]))
+    },
   )
 }

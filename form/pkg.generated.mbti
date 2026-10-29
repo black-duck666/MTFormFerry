@@ -44,6 +44,7 @@ pub(all) enum Kind {
   Checkbox
   Radio
   Dropdown
+  Listbox
   Unsupported
 } derive(Eq, @debug.Debug)
 pub fn Kind::equal(Self, Self) -> Bool

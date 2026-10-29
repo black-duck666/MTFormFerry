@@ -26,12 +26,24 @@ fn fill_text(
   value : String,
   stored_value? : String,
   choice~ : Bool = false,
+  list_options~ : Array[String] = [],
+  list_index~ : Int32 = -1,
 ) -> Unit raise {
   let multiline = !choice && (control.flags & 4096) != 0
   guard (
       choice &&
-      control.flags >= 131072 &&
-      (control.flags & 131079) == control.flags
+      (
+        (
+          control.info.kind == Dropdown &&
+          control.flags >= 131072 &&
+          (control.flags & 131079) == control.flags
+        ) ||
+        (
+          control.info.kind == Listbox &&
+          control.flags >= 0 &&
+          (control.flags & 7) == control.flags
+        )
+      )
     ) ||
     (!choice && control.flags >= 0 && (control.flags & 4103) == control.flags) else {
     fail(control.info.name + ": unsupported plain text flags")
@@ -98,12 +110,17 @@ fn fill_text(
       fail(control.info.name + ": invalid widget dimensions")
     }
     let size = if height - 4.0 < 12.0 { height - 4.0 } else { 12.0 }
-    let operators = text_operators(value, width, height, size, multiline) catch {
-      e => fail(control.info.name + ": " + e.to_string())
+    let drawing = if control.info.kind == Listbox {
+      list_drawing(list_options, list_index, width, height, size) catch {
+        e => fail(control.info.name + ": " + e.to_string())
+      }
+    } else {
+      let operators = text_operators(value, width, height, size, multiline) catch {
+        e => fail(control.info.name + ": " + e.to_string())
+      }
+      "BT /FormFerryCourier \{size} Tf 0 g \{operators} ET"
     }
-    let content = @utf8.encode(
-      "q 0 0 \{width} \{height} re W n BT /FormFerryCourier \{size} Tf 0 g \{operators} ET Q\n",
-    )
+    let content = @utf8.encode("q 0 0 \{width} \{height} re W n \{drawing} Q\n")
     let stream = @syntax.pdf_stream(
       PdfDictionary([
         (name("Type"), PdfNameObject(name("XObject"))),

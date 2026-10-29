@@ -33,7 +33,7 @@ async fn main {
         println(
           "\{field.name}\t\{Repr(field.kind)}\tread_only=\{field.read_only}",
         )
-        if field.kind is (Radio | Dropdown) {
+        if field.kind is (Radio | Dropdown | Listbox) {
           println("  choices: " + form.choices(field.name).join(", "))
         }
       }

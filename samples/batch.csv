@@ -1,4 +1,4 @@
-project,owner,source,approved,notes,decision,delivery
-FormFerry,black-duck666,https://github.com/black-duck666/MTFormFerry,true,"CSV batch, first record",Keep,Standard
+project,owner,source,approved,notes,decision,delivery,priority
+FormFerry,black-duck666,https://github.com/black-duck666/MTFormFerry,true,"CSV batch, first record",Keep,Standard,Normal
 FormFerry,black-duck666,https://github.com/black-duck666/MTFormFerry,false,"Review line one
-Review line two",Send,exp
+Review line two",Send,exp,high
