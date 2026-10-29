@@ -1,0 +1,22 @@
+----
+import {
+  "moonbitlang/async@0.22.5",
+  "moonbitlang/async@0.22.5/shell",
+  "moonbitlang/core/env",
+}
+----
+async fn main {
+  for args in [["fmt"],["info"],["fmt","--check"]] {
+    let r = @shell.Cmd("moon",args).output()
+    println(r.stdout()); println(r.stderr())
+    guard r.exit_code() == 0 else { abort("source validation failed") }
+  }
+  let targets = @env.args().iter().drop(1).to_array()
+  for target in targets {
+    for action in ["check","test"] {
+      let r = @shell.Cmd("moon",[action,"--target",target,"--deny-warn"]).output()
+      println(target + " " + action); println(r.stdout()); println(r.stderr())
+      guard r.exit_code() == 0 else { abort("target validation failed") }
+    }
+  }
+}

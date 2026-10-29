@@ -1,0 +1,35 @@
+name: FormFerry
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: wasm }
+          - { os: ubuntu-latest, target: wasm-gc }
+          - { os: ubuntu-latest, target: js }
+          - { os: ubuntu-latest, target: native }
+          - { os: windows-latest, target: native }
+          - { os: macos-latest, target: native }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - uses: hustcer/setup-moonbit@87e2bdf5cf20d3b6f5c5f266a8a513f503bb5b76
+        with:
+          version: '0.1.20261023'
+          core-version: '0.1.20261023'
+      - run: moon version --all
+      - run: moon update
+      - run: moon fmt --check
+      - run: moon info
+      - run: git diff --exit-code
+      - run: moon check --target ${{ matrix.target }} --deny-warn
+      - run: moon test --target ${{ matrix.target }} --deny-warn

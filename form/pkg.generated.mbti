@@ -1,0 +1,53 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "black-duck666/formferry/form"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/pdflite",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+type Control
+
+pub(all) struct Field {
+  name : String
+  kind : Kind
+  read_only : Bool
+} derive(Eq, @debug.Debug)
+pub fn Field::equal(Self, Self) -> Bool
+pub fn Field::not_equal(Self, Self) -> Bool
+pub fn Field::to_repr(Self) -> @debug.Repr
+
+pub struct Form {
+  original : Bytes
+  document : @pdflite.PdfDocument
+  controls : Array[Control]
+}
+pub fn Form::fields(Self) -> Array[Field]
+pub fn Form::fill(Self, Map[String, Value]) -> Bytes raise
+pub fn Form::open(Bytes) -> Self raise
+
+pub(all) enum Kind {
+  Text
+  Checkbox
+  Unsupported
+} derive(Eq, @debug.Debug)
+pub fn Kind::equal(Self, Self) -> Bool
+pub fn Kind::not_equal(Self, Self) -> Bool
+pub fn Kind::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Value {
+  Text(String)
+  Checked(Bool)
+} derive(Eq, @debug.Debug)
+pub fn Value::equal(Self, Self) -> Bool
+pub fn Value::not_equal(Self, Self) -> Bool
+pub fn Value::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
