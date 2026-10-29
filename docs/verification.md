@@ -1,5 +1,7 @@
 # Verification record
 
+The Comb, preflight, metadata, FDF and read-only slices bring the suite to 51 tests. Portable warning-denying checks/tests cover cell layout and sizing, ordered aggregate diagnostics and recovery, accurate labels/constraints, strict FDF round trips and malformed input, and value/appearance/flag preservation on locking. The file workflow verifies FDF import produces byte-identical PDF output from the same template, and locked fields refuse later updates without publishing a file. The Comb sample's third page was rendered with Poppler 26.09.0 and inspected: all eight reference characters occupy separate cells. FDF claims are restricted to the documented values-only subset; no third-party viewer certification is claimed.
+
 Local baseline: Windows, moon 0.1.20261023, moonc 0.10.17+d971670cd. Source was formatted, interfaces generated, and warning-denying checks/tests executed for Wasm, Wasm-GC and JavaScript. The local Windows machine lacks MSVC: native compilation with MinGW is not supported by this MoonBit runtime and was not reported as a native pass.
 
 The second commit's GitHub run https://github.com/black-duck666/MTFormFerry/actions/runs/40793347076 executed all six matrix jobs successfully, including native tests on Linux, macOS and Windows/MSVC. The initial run failed in installer setup because an invalid date-based archive name was supplied; the installer now selects the current stable compiler/core.

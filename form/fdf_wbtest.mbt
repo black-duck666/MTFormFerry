@@ -107,4 +107,53 @@ test "FDF rejects foreign fields extra attributes malformed and duplicate assign
     )
   }
   assert_eq(f.values_from_fdf(good).get("customer"), Some(Text("Ada")))
+  d.add_object_given_number(
+    root,
+    PdfDictionary([
+      (
+        name("FDF"),
+        PdfDictionary([
+          (name("Fields"), PdfArray([field])),
+          (name("F"), PdfString(b"other.pdf")),
+        ]),
+      ),
+    ]),
+  )
+  assert_true(
+    try {
+      ignore(
+        f.values_from_fdf(fdf_header(@pdf.pdf_write_document(d), b"%FDF-1.2")),
+      )
+      false
+    } catch {
+      _ => true
+    },
+  )
+  let cyclic = d.add_object(PdfDictionary([]))
+  d.add_object_given_number(
+    cyclic,
+    PdfDictionary([
+      (name("T"), PdfString(b"loop")),
+      (name("Kids"), PdfArray([PdfIndirect(cyclic)])),
+    ]),
+  )
+  d.add_object_given_number(
+    root,
+    PdfDictionary([
+      (
+        name("FDF"),
+        PdfDictionary([(name("Fields"), PdfArray([PdfIndirect(cyclic)]))]),
+      ),
+    ]),
+  )
+  assert_true(
+    try {
+      ignore(
+        f.values_from_fdf(fdf_header(@pdf.pdf_write_document(d), b"%FDF-1.2")),
+      )
+      false
+    } catch {
+      _ => true
+    },
+  )
 }

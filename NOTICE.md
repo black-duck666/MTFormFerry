@@ -1,5 +1,7 @@
 # Sources
 
+Comb semantics also refer to https://pdf-lib.js.org/docs/api/classes/pdftextfield#enablecombing (pdf-lib, MIT). FDF value exchange refers to Adobe's Forms overview and the Forms Data Format section of its PDF reference: https://opensource.adobe.com/dc-acrobat-sdk-docs/library/overview/Overview_Forms.html. The existing pdflite dependency supplies syntax/classic-xref IO; FDF workflow logic and tests are project-authored. No additional implementation or fixture code is copied.
+
 Additional format reference: Adobe's public PDF 1.7 reference / ISO 32000-1:2008, section 12.7: https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf. The reference is not redistributed; no text or implementation is copied. FormFerry documents its own stricter completion policy separately.
 
 Project code is a new implementation of the AcroForm workflow. PDF syntax, object IO and incremental writing use moonbitlang/pdflite 0.4.1, Apache-2.0, https://github.com/moonbitlang/office.mbt. The library is consumed as a dependency; its implementation is not copied here.

@@ -18,6 +18,7 @@ async fn main {
   let dir = @fs.tmpdir(prefix="formferry-e2e-")
   let output = dir + "/completed.pdf"
   let base = ["run","bin/formferry","--target",target,"--"]
+  command(base + ["help"],true)
   command(base + ["fill","samples/choices.pdf","samples/comb.json",dir+"/comb.pdf"],true)
   command(base + ["fields","samples/project.pdf"],true)
   command(base + ["schema","samples/choices.pdf"],true)
@@ -77,6 +78,13 @@ async fn main {
   command(base + ["reset",csv_batch+"/0002.pdf",bad,bad_reset],false)
   assert_false(@fs.exists(bad_reset))
   assert_false(@fs.exists(bad_reset+".formferry-part"))
+  let locked = dir + "/locked.pdf"
+  command(base + ["lock-complete",csv_batch+"/0002.pdf","samples/lock.json",locked],true)
+  @fs.write_file(bad,"{\"project\":\"replacement\"}")
+  let blocked = dir + "/blocked.pdf"
+  command(base + ["fill",locked,bad,blocked],false)
+  assert_false(@fs.exists(blocked))
+  assert_false(@fs.exists(blocked+".formferry-part"))
   @fs.write_file(bad,"project,owner,approved\nValid,owner,true\nBad,owner,yes")
   let bad_csv = dir + "/bad-csv"
   command(base + ["batch-csv","samples/project.pdf",bad,bad_csv],false)

@@ -8,6 +8,8 @@
 
 [FDF value exchange](docs/fdf.md) exports and imports a strict values-only FDF 1.2 profile, feeding the same verified PDF workflow.
 
+[Read-only completion](docs/lock.md) marks selected fields read-only while preserving values and appearances; it is a viewer hint, not tamper protection. Run the CLI with `help` to list all workflows.
+
 [Template alignment](docs/alignment.md) preserves left, centered and right-aligned text, including inherited settings and each multiline row.
 
 [Optional text fitting](docs/fit.md) shrinks overflowing ASCII text down to a 6pt floor while retaining the exact value; the default still rejects overflow.

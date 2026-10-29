@@ -1,5 +1,7 @@
 # End-to-end: project registration
 
+The same verification program now covers fixed-cell reference codes, schema export, aggregate validation, FDF export/import and locking completed fields. See `comb.json` and `lock.json` for authored field assignments/names. `export-fdf` followed by `fill-fdf` recreates the same bytes from the same template; `lock-complete` preserves rendering and causes subsequent updates to the named fields to fail. Run `moon run bin/formferry --target wasm -- help` for all commands.
+
 For spreadsheet exports, run `moon run bin/formferry --target wasm -- batch-csv-complete samples/choices.pdf samples/batch.csv _build/csv-applications` after generating both templates. Each row produces a verified PDF, including the quoted multiline cell. See [CSV input rules](../docs/csv.md). `check FILE.pdf` lists missing Required fields; `values FILE.pdf` prints supported current values as JSON.
 
 The template and its generator are project-authored, MIT licensed. The JSON contains the actual public repository name, owner and URL; `approved` is an example checkbox choice, not an external endorsement. No private infrastructure is needed. The library accepts other existing AcroForms within its documented profile; field names and values are not hardcoded in the fill engine.

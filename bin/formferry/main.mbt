@@ -17,9 +17,12 @@ async fn main {
       | "validate-complete"
       | "fill-fdf"
     ) else {
-    fail("--fit-text is only supported for fill, batch and reset commands")
+    fail(
+      "--fit-text applies only to fill, validation, batch and reset commands",
+    )
   }
   match args {
+    [_, "help" | "--help"] => println(usage())
     [_, "export-fdf", input, output] => {
       guard @fs.file_size(input) <= 33554432L else {
         fail("PDF exceeds 32 MiB")
@@ -76,7 +79,7 @@ async fn main {
         fail("validation failed for \{issues.length()} fields")
       }
     }
-    [_, "reset", input, data, output] => {
+    [_, "reset" | "lock" | "lock-complete", input, data, output] => {
       guard !@fs.exists(output) else {
         fail("output exists; choose a new path")
       }
@@ -93,9 +96,13 @@ async fn main {
         fields.push(s)
       }
       let form = @form.Form::open(@fs.read_file(input).binary())
-      let bytes = form.reset(fields, fit_text~)
+      let bytes = if args[1] == "reset" {
+        form.reset(fields, fit_text~)
+      } else {
+        form.lock(fields, complete=args[1] == "lock-complete")
+      }
       publish(bytes, output)
-      println("saved \{output}; reset and verified \{fields.length()} fields")
+      println("saved \{output}; \{args[1]} verified \{fields.length()} fields")
     }
     [_, "values", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
@@ -163,9 +170,6 @@ async fn main {
       publish(bytes, output)
       println("saved \{output}; verified \{values.length()} fields")
     }
-    _ =>
-      fail(
-        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf [--fit-text] | formferry reset INPUT.pdf NAMES.json NEW.pdf [--fit-text] | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY [--fit-text] | formferry batch-csv|batch-csv-complete INPUT.pdf RECORDS.csv NEW_DIRECTORY [--fit-text]",
-      )
+    _ => fail(usage())
   }
 }

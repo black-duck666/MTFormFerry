@@ -1,5 +1,7 @@
 # Contract and boundaries
 
+Additional workflows: Comb text with fixed MaxLen cells, aggregate `validate` diagnostics, versioned `schema_json` constraints/labels, strict values-only FDF 1.2 exchange and selected-field `lock`. Each has a dedicated guide. ReadOnly is a viewer hint and does not provide tamper protection; FDF features outside the documented profile are rejected.
+
 Consumers: MoonBit backends producing registration/application PDFs, local batch document tools, maintenance/checklist systems that already have AcroForm templates. Supply a template and named values; inspect fields once, fill multiple independent copies, read back, then save or return bytes. This removes repeated manual typing without implementing a PDF viewer.
 
 `Form::open(Bytes)` discovers a bounded field tree. `fields()` returns name, kind and read-only state; `choices(name)` discovers actual radio/dropdown/list exports. `fill(Map[String,Value])` produces a new PDF; no writes escape on a rejected transaction. `value(name)` reads supported current values; `values_json()` exports a checked snapshot. JSON accepts strings, booleans and explicit selectors. `records_from_text` and template-aware `records_from_csv` feed ordered, fully verified batches of 1..32 records within a 64 MiB combined output budget. `missing_required` and optional `complete=true` on fill/fill_batch enforce the documented completion policy. Public interfaces are generated in `form/pkg.generated.mbti`.
