@@ -52,6 +52,9 @@ pub fn Form::choices(self : Form, key : String) -> Array[String] raise {
   let matches = self.controls.filter(c => c.info.name == key)
   guard matches.length() == 1 else { fail("unknown field: " + key) }
   let c = matches[0]
+  if c.info.kind == Dropdown {
+    return dropdown_options(self.document, c).map(p => p.0)
+  }
   guard c.info.kind == Radio else {
     fail(key + ": field has no supported choices")
   }

@@ -24,8 +24,15 @@ fn fill_text(
   doc : @pdf.PdfDocument,
   control : Control,
   value : String,
+  stored_value? : String,
+  choice~ : Bool = false,
 ) -> Unit raise {
-  guard control.flags >= 0 && control.flags <= 7 else {
+  guard (
+      choice &&
+      control.flags >= 131072 &&
+      (control.flags & 131079) == control.flags
+    ) ||
+    (!choice && control.flags >= 0 && control.flags <= 7) else {
     fail(control.info.name + ": only plain single-line text is supported")
   }
   guard value.length() <= 4096 &&
@@ -37,7 +44,7 @@ fn fill_text(
   }
   // MaxLen is inheritable through the parent field chain.
   let mut ancestor = control.object
-  for depth in 0..<64 {
+  for depth in 0..<(if choice { 0 } else { 64 }) {
     if get(doc, ancestor, "MaxLen") is Some(limit) {
       guard limit is PdfInteger(n) && n >= value.length() else {
         fail(control.info.name + ": MaxLen exceeded or invalid")
@@ -50,6 +57,7 @@ fn fill_text(
     }
     guard depth < 63 else { fail("cyclic Parent chain") }
   }
+  let stored = @utf8.encode(stored_value.unwrap_or(value))
   let font = @syntax.PdfDictionary([
     (name("Type"), PdfNameObject(name("Font"))),
     (name("Subtype"), PdfNameObject(name("Type1"))),
@@ -122,7 +130,7 @@ fn fill_text(
       ap.add_dict_entry(name("N"), PdfIndirect(appearance)),
     )
     let updated = if id == control.number {
-      updated.add_dict_entry(name("V"), PdfString(@utf8.encode(value)))
+      updated.add_dict_entry(name("V"), PdfString(stored))
     } else {
       updated
     }
@@ -131,7 +139,7 @@ fn fill_text(
   if !control.widgets.any(pair => pair.0 == control.number) {
     doc.add_object_given_number(
       control.number,
-      control.object.add_dict_entry(name("V"), PdfString(@utf8.encode(value))),
+      control.object.add_dict_entry(name("V"), PdfString(stored)),
     )
   }
 }

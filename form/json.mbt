@@ -35,6 +35,7 @@ pub fn Form::value(self : Form, key : String) -> Value? raise {
       } else {
         Some(Selected(export_name(n)))
       }
+    (Dropdown, Some(s)) => Some(Selected(text(s)))
     (_, None) => None
     _ => fail(key + ": unsupported current value")
   }

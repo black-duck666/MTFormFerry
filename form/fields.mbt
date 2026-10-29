@@ -3,6 +3,7 @@ pub(all) enum Kind {
   Text
   Checkbox
   Radio
+  Dropdown
   Unsupported
 } derive(Eq, Debug)
 
@@ -163,6 +164,8 @@ fn scan(
       Checkbox
     } else if ft == Some(PdfNameObject(name("Btn"))) && (flags & 98304) == 32768 {
       Radio
+    } else if ft == Some(PdfNameObject(name("Ch"))) && (flags & 131072) != 0 {
+      Dropdown
     } else {
       Unsupported
     }
