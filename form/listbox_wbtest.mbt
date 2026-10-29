@@ -70,7 +70,7 @@ test "listbox refuses scrolling clipping unsupported flags and choices and recov
   let original = d.direct(PdfIndirect(8))
   for
     field in [
-      original.add_dict_entry(name("Ff"), PdfInteger(2097152)),
+      original.add_dict_entry(name("Ff"), PdfInteger(67108864)),
       original.add_dict_entry(name("Ff"), PdfInteger(524288)),
       original.add_dict_entry(
         name("Rect"),

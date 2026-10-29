@@ -1,5 +1,5 @@
 ///|
-/// Named values: strings fill text, booleans checkboxes, {select: string} selects a choice.
+/// Named values: text strings, checkbox booleans, and {select: string or string array}.
 pub fn values_from_json(input : Json) -> Map[String, Value] raise {
   guard input is Object(entries) else { fail("values must be a JSON object") }
   let values : Map[String, Value] = Map([])
@@ -9,12 +9,15 @@ pub fn values_from_json(input : Json) -> Map[String, Value] raise {
       True => Checked(true)
       False => Checked(false)
       Object(m) => {
-        guard m.length() == 1 && m.get("select") is Some(String(s)) else {
-          fail(key + ": expected {select: string}")
+        guard m.length() == 1 && m.get("select") is Some(selection) else {
+          fail(key + ": expected {select: string or string array}")
         }
-        Selected(s)
+        match selection {
+          String(s) => Selected(s)
+          _ => Selections(json_selections(selection, key))
+        }
       }
-      _ => fail(key + ": expected string, boolean or {select: string}")
+      _ => fail(key + ": expected string, boolean or {select: string or string array}")
     }
   }
   values
@@ -36,6 +39,13 @@ pub fn Form::value(self : Form, key : String) -> Value? raise {
       } else {
         Some(Selected(export_name(n)))
       }
+    (Listbox, Some(s)) if (control.flags & 2097152) != 0 => {
+      let entries = match s {
+        PdfArray(a) => a
+        _ => [s]
+      }
+      Some(Selections(entries.map(s => text(self.document.direct(s)))))
+    }
     (Dropdown | Listbox, Some(s)) => Some(Selected(text(s)))
     (_, None) => None
     _ => fail(key + ": unsupported current value")

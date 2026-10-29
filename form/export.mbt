@@ -50,20 +50,23 @@ fn Form::checked_current(self : Form, c : Control) -> Value? raise {
     }
     Dropdown | Listbox => {
       let options = dropdown_options(self.document, c)
-      if value is Some(Selected(s)) {
-        let indices : Array[@syntax.PdfObject] = []
-        for i, pair in options {
-          if pair.0 == s {
-            indices.push(PdfInteger(i))
-          }
+      if value is Some(selection) {
+        let selected = match selection {
+          Selected(s) => [s]
+          Selections(s) => s
+          _ => fail(c.info.name + ": invalid current selection")
         }
-        guard indices.length() == 1 else {
-          fail(c.info.name + ": current choice is unknown")
-        }
+        let indices = selection_indices(c, options, selected).map(i => {
+          @syntax.PdfObject::PdfInteger(i)
+        })
         if get(self.document, c.object, "I") is Some(indices_value) {
           guard indices_value == PdfArray(indices) else {
             fail(c.info.name + ": choice value and index disagree")
           }
+        }
+      } else {
+        guard get(self.document, c.object, "I") is None else {
+          fail(c.info.name + ": choice index without a value")
         }
       }
     }
@@ -83,6 +86,8 @@ pub fn Form::values_json(self : Form) -> Json raise {
         Text(s) => Json::string(s)
         Checked(b) => Json::boolean(b)
         Selected(s) => Json::object({ "select": Json::string(s) })
+        Selections(s) =>
+          Json::object({ "select": Json::array(s.map(Json::string)) })
       }
     }
   }

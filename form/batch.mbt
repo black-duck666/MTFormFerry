@@ -21,7 +21,7 @@ pub fn Form::fill_batch(
     guard total <= 67108864L else { fail("batch output exceeds 64 MiB") }
     let check = Form::open(bytes)
     for key, value in values {
-      guard check.value(key) == Some(value) else {
+      guard matches_value(value, check.value(key)) else {
         fail("record \{i+1}: readback mismatch for " + key)
       }
     }

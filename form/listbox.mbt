@@ -1,13 +1,13 @@
 ///|
 fn list_drawing(
   labels : Array[String],
-  selected : Int32,
+  selected : Array[Int32],
   width : Double,
   height : Double,
   size : Double,
 ) -> String raise {
   let leading = size * 1.2
-  guard !labels.is_empty() && selected >= 0 && selected < labels.length() else {
+  guard !labels.is_empty() && selected.all(i => i >= 0 && i < labels.length()) else {
     fail("invalid list selection")
   }
   guard labels.length().to_double() * leading <= height - 4.0 else {
@@ -21,7 +21,7 @@ fn list_drawing(
       fail("list label requires ASCII and must fit the widget width")
     }
     let baseline = height - 2.0 - size - i.to_double() * leading
-    if i == selected {
+    if selected.contains(i) {
       let bottom = baseline - size * 0.2
       let available = width - 4.0
       out.write_string("0.85 g 2 \{bottom} \{available} \{leading} re f ")

@@ -27,11 +27,8 @@ fn dropdown_options(
       c.flags >= 131072 &&
       (c.flags & 131079) == c.flags
     ) ||
-    (c.info.kind == Listbox && c.flags >= 0 && (c.flags & 7) == c.flags) else {
-    fail(
-      c.info.name +
-      ": editable, sorted or multi-select choice flags unsupported",
-    )
+    (c.info.kind == Listbox && c.flags >= 0 && (c.flags & 2097159) == c.flags) else {
+    fail(c.info.name + ": editable or sorted choice flags unsupported")
   }
   guard inherited(doc, c.object, "Opt") is Some(PdfArray(opts)) &&
     !opts.is_empty() &&
@@ -69,6 +66,9 @@ fn fill_dropdown(
   c : Control,
   selected : String,
 ) -> Unit raise {
+  guard (c.flags & 2097152) == 0 else {
+    fail(c.info.name + ": multi-select list requires Selections")
+  }
   let options = dropdown_options(doc, c)
   let mut index = -1
   for i, pair in options {
@@ -86,7 +86,7 @@ fn fill_dropdown(
     stored_value=selected,
     choice=true,
     list_options=if c.info.kind == Listbox { options.map(p => p.1) } else { [] },
-    list_index=index,
+    list_indices=[index],
   )
   let field = doc.direct(PdfIndirect(c.number))
   doc.add_object_given_number(

@@ -58,6 +58,7 @@ async fn main {
   let csv_batch = dir + "/csv-batch"
   command(base + ["batch-csv-complete","samples/choices.pdf","samples/batch.csv",csv_batch],true)
   assert_true(@fs.exists(csv_batch+"/0002.pdf"))
+  command(base + ["values",csv_batch+"/0002.pdf"],true)
   @fs.write_file(bad,"project,owner,approved\nValid,owner,true\nBad,owner,yes")
   let bad_csv = dir + "/bad-csv"
   command(base + ["batch-csv","samples/project.pdf",bad,bad_csv],false)

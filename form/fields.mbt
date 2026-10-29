@@ -20,6 +20,7 @@ pub(all) enum Value {
   Text(String)
   Checked(Bool)
   Selected(String)
+  Selections(Array[String])
 } derive(Eq, Debug)
 
 ///|

@@ -73,7 +73,9 @@ async fn main {
       let bytes = form.fill(values, complete=args[1] == "complete", fit_text~)
       let check = @form.Form::open(bytes)
       for key, value in values {
-        guard check.value(key) == Some(value) else {
+        let actual = check.value(key)
+        guard actual == Some(value) ||
+          (value is Selections(s) && s.is_empty() && actual is None) else {
           fail("readback mismatch: " + key)
         }
       }

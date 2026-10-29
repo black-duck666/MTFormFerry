@@ -11,6 +11,7 @@ pub fn Form::missing_required(self : Form) -> Array[String] raise {
       Some(Text(s)) => !s.iter().all(ch => ch == ' ' || ch == '\n')
       Some(Checked(b)) => b
       Some(Selected(s)) => !s.is_empty()
+      Some(Selections(s)) => !s.is_empty()
       None => false
     }
     if !present {

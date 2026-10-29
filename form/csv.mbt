@@ -120,12 +120,15 @@ pub fn Form::records_from_csv(
           }
           Checked(s == "true")
         }
-        Radio | Dropdown | Listbox => {
-          guard self.choices(c.info.name).contains(s) else {
-            fail("CSV record \{index}, \{c.info.name}: unknown choice export")
+        Radio | Dropdown | Listbox =>
+          if c.info.kind == Listbox && (c.flags & 2097152) != 0 {
+            Selections(json_selections(@json.parse(s), c.info.name))
+          } else {
+            guard self.choices(c.info.name).contains(s) else {
+              fail("CSV record \{index}, \{c.info.name}: unknown choice export")
+            }
+            Selected(s)
           }
-          Selected(s)
-        }
         Unsupported => fail("CSV unsupported field: " + c.info.name)
       }
     }

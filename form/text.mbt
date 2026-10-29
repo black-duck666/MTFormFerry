@@ -27,7 +27,7 @@ fn fill_text(
   stored_value? : String,
   choice~ : Bool = false,
   list_options~ : Array[String] = [],
-  list_index~ : Int32 = -1,
+  list_indices~ : Array[Int32] = [],
   fit_text~ : Bool = false,
 ) -> Unit raise {
   let multiline = !choice && (control.flags & 4096) != 0
@@ -43,7 +43,7 @@ fn fill_text(
         (
           control.info.kind == Listbox &&
           control.flags >= 0 &&
-          (control.flags & 7) == control.flags
+          (control.flags & 2097159) == control.flags
         )
       )
     ) ||
@@ -113,7 +113,9 @@ fn fill_text(
     }
     let size = if height - 4.0 < 12.0 { height - 4.0 } else { 12.0 }
     let drawing = if control.info.kind == Listbox {
-      let drawing = list_drawing(list_options, list_index, width, height, size) catch {
+      let drawing = list_drawing(
+        list_options, list_indices, width, height, size,
+      ) catch {
         e => fail(control.info.name + ": " + e.to_string())
       }
       drawing

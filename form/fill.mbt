@@ -67,6 +67,7 @@ pub fn Form::fill(
       (Text, Text(s)) => fill_text(doc, control, s, fit_text~)
       (Radio, Selected(s)) => fill_radio(doc, control, s)
       (Dropdown | Listbox, Selected(s)) => fill_dropdown(doc, control, s)
+      (Listbox, Selections(s)) => fill_multi(doc, control, s)
       _ => fail(key + ": unsupported field/value combination")
     }
   }

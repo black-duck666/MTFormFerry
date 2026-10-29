@@ -12,7 +12,7 @@
 
 Radio groups are supported through `Selected(export_name)` or JSON `{"answer":{"select":"No"}}`. Discover actual exports with `form.choices("answer")`; see [radio groups](docs/radio.md). Existing on/off appearances are reused and all widgets are synchronized.
 
-[Dropdowns](docs/dropdown.md) and [single-selection lists](docs/listbox.md) also use `Selected(export)`: the stored export and visible label are handled separately. Lists render every option and highlight the selected row; editable/multi-select controls and list overflow are rejected.
+[Dropdowns](docs/dropdown.md) and [single-selection lists](docs/listbox.md) use `Selected(export)`. [Multi-selection lists](docs/multiselect.md) use `Selections(exports)` and highlight each selected row. Stored exports and visible labels are handled separately; editable controls and list overflow are rejected.
 
 [Multiline text](docs/multiline.md) accepts explicit LF newlines on Multiline fields, preserves the stored value, measures hard wrapping and refuses vertical overflow. Single-line behavior remains unchanged.
 
@@ -32,4 +32,4 @@ The core is tested on Wasm, Wasm-GC and JavaScript locally. GitHub CI also execu
 
 Text uses an explicit plain style: black Courier, template `/Q` horizontal alignment, up to 12pt with 2pt horizontal inset. This replaces the edited widget's normal appearance, rather than preserving its original typography. Printable ASCII (plus LF on Multiline fields) only; comb/password/rich-text flags, rotated controls, rollover/down appearances, MaxLen violations and overflow fail. Non-ASCII text is rejected before any file is written. This profile does not promise arbitrary PDF or font compatibility.
 
-Roadmap: multi-selection/scrolling and Unicode font policies; richer text styling; optional flattening. Capabilities are delivered as complete tested slices.
+Roadmap: scrolling and Unicode font policies; richer text styling; optional flattening. Capabilities are delivered as complete tested slices.
