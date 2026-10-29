@@ -17,7 +17,10 @@ pub fn values_from_json(input : Json) -> Map[String, Value] raise {
           _ => Selections(json_selections(selection, key))
         }
       }
-      _ => fail(key + ": expected string, boolean or {select: string or string array}")
+      _ =>
+        fail(
+          key + ": expected string, boolean or {select: string or string array}",
+        )
     }
   }
   values

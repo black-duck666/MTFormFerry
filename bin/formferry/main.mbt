@@ -12,10 +12,32 @@ async fn main {
       | "batch-complete"
       | "batch-csv"
       | "batch-csv-complete"
+      | "reset"
     ) else {
-    fail("--fit-text is only supported for fill and batch commands")
+    fail("--fit-text is only supported for fill, batch and reset commands")
   }
   match args {
+    [_, "reset", input, data, output] => {
+      guard !@fs.exists(output) else {
+        fail("output exists; choose a new path")
+      }
+      guard @fs.file_size(input) <= 33554432L && @fs.file_size(data) <= 1048576L else {
+        fail("PDF or JSON exceeds input limit")
+      }
+      guard @json.parse(@utf8.decode(@fs.read_file(data).binary()))
+        is Array(names) else {
+        fail("reset names must be a JSON string array")
+      }
+      let fields = []
+      for item in names {
+        guard item is String(s) else { fail("reset name must be a string") }
+        fields.push(s)
+      }
+      let form = @form.Form::open(@fs.read_file(input).binary())
+      let bytes = form.reset(fields, fit_text~)
+      publish(bytes, output)
+      println("saved \{output}; reset and verified \{fields.length()} fields")
+    }
     [_, "values", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
       let form = @form.Form::open(@fs.read_file(path).binary())
@@ -79,20 +101,12 @@ async fn main {
           fail("readback mismatch: " + key)
         }
       }
-      // Sibling temporary file is exclusively created, then renamed without replacement.
-      let temporary = output + ".formferry-part"
-      let file = @fs.create(temporary, allow_existing=false, sync=Full)
-      errdefer (@fs.remove(temporary) catch { _ => () })
-      {
-        defer file.close()
-        file.write(bytes)
-      }
-      @fs.rename(temporary, output, replace=false)
+      publish(bytes, output)
       println("saved \{output}; verified \{values.length()} fields")
     }
     _ =>
       fail(
-        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf [--fit-text] | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY [--fit-text] | formferry batch-csv|batch-csv-complete INPUT.pdf RECORDS.csv NEW_DIRECTORY [--fit-text]",
+        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf [--fit-text] | formferry reset INPUT.pdf NAMES.json NEW.pdf [--fit-text] | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY [--fit-text] | formferry batch-csv|batch-csv-complete INPUT.pdf RECORDS.csv NEW_DIRECTORY [--fit-text]",
       )
   }
 }

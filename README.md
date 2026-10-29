@@ -4,6 +4,8 @@
 
 [Optional text fitting](docs/fit.md) shrinks overflowing ASCII text down to a 6pt floor while retaining the exact value; the default still rejects overflow.
 
+[Reset to defaults](docs/reset.md) restores selected fields to PDF defaults or explicit empty states, regenerates appearances and verifies readback before publication.
+
 [Value snapshots](docs/values.md) export existing supported values as deterministic JSON for review and reuse; inconsistent button appearances and unsupported controls are refused.
 
 [Completion checks](docs/completion.md) distinguish drafts from completed applications: list missing Required fields, or fill with `complete=true` before publishing an individual PDF or a batch.

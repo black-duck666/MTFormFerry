@@ -61,15 +61,7 @@ pub fn Form::fill(
     let candidates = self.controls.filter(c => c.info.name == key)
     guard candidates.length() == 1 else { fail("unknown field: " + key) }
     let control = candidates[0]
-    guard !control.info.read_only else { fail(key + ": field is read-only") }
-    match (control.info.kind, value) {
-      (Checkbox, Checked(b)) => checkbox(doc, control, b)
-      (Text, Text(s)) => fill_text(doc, control, s, fit_text~)
-      (Radio, Selected(s)) => fill_radio(doc, control, s)
-      (Dropdown | Listbox, Selected(s)) => fill_dropdown(doc, control, s)
-      (Listbox, Selections(s)) => fill_multi(doc, control, s)
-      _ => fail(key + ": unsupported field/value combination")
-    }
+    write_value(doc, control, value, fit_text)
   }
   let bytes = @pdf.pdf_write_document_incremental_update(self.original, doc)
   if complete {
@@ -79,4 +71,23 @@ pub fn Form::fill(
     }
   }
   bytes
+}
+
+///|
+fn write_value(
+  doc : @pdf.PdfDocument,
+  control : Control,
+  value : Value,
+  fit_text : Bool,
+) -> Unit raise {
+  let key = control.info.name
+  guard !control.info.read_only else { fail(key + ": field is read-only") }
+  match (control.info.kind, value) {
+    (Checkbox, Checked(b)) => checkbox(doc, control, b)
+    (Text, Text(s)) => fill_text(doc, control, s, fit_text~)
+    (Radio, Selected(s)) => fill_radio(doc, control, s)
+    (Dropdown | Listbox, Selected(s)) => fill_dropdown(doc, control, s)
+    (Listbox, Selections(s)) => fill_multi(doc, control, s)
+    _ => fail(key + ": unsupported field/value combination")
+  }
 }
