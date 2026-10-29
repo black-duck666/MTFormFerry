@@ -1,0 +1,7 @@
+# Fit longer text without losing content
+
+Opt in with `form.fill(values, fit_text=true)` or `form.fill_batch(records, fit_text=true)`. The writer tries the normal size first, then smaller candidates in 0.25pt steps down to a 6pt floor. Every candidate uses the same Courier measurement, alignment, wrapping and vertical capacity rules. If no candidate fits, the entire operation fails; values are never truncated, normalized or replaced.
+
+This policy applies only to text fields. Choice labels keep their own fixed-size appearance profile. ASCII, supported flags, MaxLen, read-only and widget restrictions are checked before layout and cannot be bypassed by fitting. Different widgets may use different sizes to accommodate their dimensions. Existing fits retain byte-identical output. The floor is a documented application choice, not a guarantee of accessibility or preservation of template typography.
+
+Run `moon run bin/formferry --target wasm -- complete samples/project.pdf samples/fit.json NEW.pdf --fit-text`. The source URL is the actual repository generator path; notes contain four complete review lines. Without the trailing option, the same input is refused for overflow. The option works with fill/complete and all JSON/CSV batch commands. `moon run samples/verify.mbtx wasm` exercises rejection, fitted output and exact value readback. Fixtures and implementation are MIT; no external fitting code is copied.

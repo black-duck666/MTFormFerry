@@ -1,6 +1,20 @@
 ///|
 async fn main {
-  let args = @env.args()
+  let raw = @env.args()
+  let fit_text = raw.get(raw.length() - 1) == Some("--fit-text")
+  let args = if fit_text { raw[:raw.length() - 1].to_owned() } else { raw }
+  guard !fit_text ||
+    args.get(1)
+    is Some(
+      "fill"
+      | "complete"
+      | "batch"
+      | "batch-complete"
+      | "batch-csv"
+      | "batch-csv-complete"
+    ) else {
+    fail("--fit-text is only supported for fill and batch commands")
+  }
   match args {
     [_, "values", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
@@ -17,7 +31,13 @@ async fn main {
       println("all Required fields satisfy the FormFerry completion policy")
     }
     [_, "batch" | "batch-complete", input, data, output] =>
-      batch(input, data, output, complete=args[1] == "batch-complete")
+      batch(
+        input,
+        data,
+        output,
+        complete=args[1] == "batch-complete",
+        fit_text~,
+      )
     [_, "batch-csv" | "batch-csv-complete", input, data, output] =>
       batch(
         input,
@@ -25,6 +45,7 @@ async fn main {
         output,
         csv=true,
         complete=args[1] == "batch-csv-complete",
+        fit_text~,
       )
     [_, "fields", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
@@ -49,7 +70,7 @@ async fn main {
       let values = @form.values_from_text(
         @utf8.decode(@fs.read_file(data).binary()),
       )
-      let bytes = form.fill(values, complete=args[1] == "complete")
+      let bytes = form.fill(values, complete=args[1] == "complete", fit_text~)
       let check = @form.Form::open(bytes)
       for key, value in values {
         guard check.value(key) == Some(value) else {
@@ -69,7 +90,7 @@ async fn main {
     }
     _ =>
       fail(
-        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY | formferry batch-csv|batch-csv-complete INPUT.pdf RECORDS.csv NEW_DIRECTORY",
+        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf [--fit-text] | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY [--fit-text] | formferry batch-csv|batch-csv-complete INPUT.pdf RECORDS.csv NEW_DIRECTORY [--fit-text]",
       )
   }
 }

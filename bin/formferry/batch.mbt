@@ -5,6 +5,7 @@ async fn batch(
   output : String,
   complete~ : Bool = false,
   csv~ : Bool = false,
+  fit_text~ : Bool = false,
 ) -> Unit {
   guard !@fs.exists(output) else {
     fail("batch output exists; choose a new directory")
@@ -19,7 +20,7 @@ async fn batch(
   } else {
     @form.records_from_text(source)
   }
-  let documents = form.fill_batch(records, complete~)
+  let documents = form.fill_batch(records, complete~, fit_text~)
   let staging = output + ".formferry-part"
   @fs.mkdir(staging, permission=0o700, allow_exist=false)
   let written : Array[String] = []

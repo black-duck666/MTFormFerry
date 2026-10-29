@@ -47,6 +47,7 @@ pub fn Form::fill(
   self : Form,
   values : Map[String, Value],
   complete~ : Bool = false,
+  fit_text~ : Bool = false,
 ) -> Bytes raise {
   let doc = @pdf.pdf_read_document_from_bytes(self.original)
   for key, _ in values {
@@ -63,7 +64,7 @@ pub fn Form::fill(
     guard !control.info.read_only else { fail(key + ": field is read-only") }
     match (control.info.kind, value) {
       (Checkbox, Checked(b)) => checkbox(doc, control, b)
-      (Text, Text(s)) => fill_text(doc, control, s)
+      (Text, Text(s)) => fill_text(doc, control, s, fit_text~)
       (Radio, Selected(s)) => fill_radio(doc, control, s)
       (Dropdown | Listbox, Selected(s)) => fill_dropdown(doc, control, s)
       _ => fail(key + ": unsupported field/value combination")

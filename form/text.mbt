@@ -28,6 +28,7 @@ fn fill_text(
   choice~ : Bool = false,
   list_options~ : Array[String] = [],
   list_index~ : Int32 = -1,
+  fit_text~ : Bool = false,
 ) -> Unit raise {
   let multiline = !choice && (control.flags & 4096) != 0
   let alignment = if choice { 0 } else { text_alignment(doc, control) }
@@ -112,17 +113,19 @@ fn fill_text(
     }
     let size = if height - 4.0 < 12.0 { height - 4.0 } else { 12.0 }
     let drawing = if control.info.kind == Listbox {
-      list_drawing(list_options, list_index, width, height, size) catch {
+      let drawing = list_drawing(list_options, list_index, width, height, size) catch {
         e => fail(control.info.name + ": " + e.to_string())
       }
+      drawing
     } else {
-      let operators = text_operators(
+      let (size, operators) = fitted_layout(
         value,
         width,
         height,
         size,
         multiline,
-        alignment~,
+        alignment,
+        fit_text && !choice,
       ) catch {
         e => fail(control.info.name + ": " + e.to_string())
       }
