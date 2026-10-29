@@ -60,6 +60,7 @@ pub fn Form::fill(self : Form, values : Map[String, Value]) -> Bytes raise {
     match (control.info.kind, value) {
       (Checkbox, Checked(b)) => checkbox(doc, control, b)
       (Text, Text(s)) => fill_text(doc, control, s)
+      (Radio, Selected(s)) => fill_radio(doc, control, s)
       _ => fail(key + ": unsupported field/value combination")
     }
   }

@@ -2,6 +2,7 @@
 pub(all) enum Kind {
   Text
   Checkbox
+  Radio
   Unsupported
 } derive(Eq, Debug)
 
@@ -16,6 +17,7 @@ pub(all) struct Field {
 pub(all) enum Value {
   Text(String)
   Checked(Bool)
+  Selected(String)
 } derive(Eq, Debug)
 
 ///|
@@ -159,6 +161,8 @@ fn scan(
       Kind::Text
     } else if ft == Some(PdfNameObject(name("Btn"))) && (flags & 98304) == 0 {
       Checkbox
+    } else if ft == Some(PdfNameObject(name("Btn"))) && (flags & 98304) == 32768 {
+      Radio
     } else {
       Unsupported
     }

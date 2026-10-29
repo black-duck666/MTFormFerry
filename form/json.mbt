@@ -1,5 +1,5 @@
 ///|
-/// A flat JSON object: strings fill text, booleans fill checkboxes. Other types are rejected.
+/// Named values: strings fill text, booleans checkboxes, {select: string} selects a choice.
 pub fn values_from_json(input : Json) -> Map[String, Value] raise {
   guard input is Object(entries) else { fail("values must be a JSON object") }
   let values : Map[String, Value] = Map([])
@@ -8,7 +8,13 @@ pub fn values_from_json(input : Json) -> Map[String, Value] raise {
       String(s) => Text(s)
       True => Checked(true)
       False => Checked(false)
-      _ => fail(key + ": expected string or boolean")
+      Object(m) => {
+        guard m.length() == 1 && m.get("select") is Some(String(s)) else {
+          fail(key + ": expected {select: string}")
+        }
+        Selected(s)
+      }
+      _ => fail(key + ": expected string, boolean or {select: string}")
     }
   }
   values
@@ -23,6 +29,12 @@ pub fn Form::value(self : Form, key : String) -> Value? raise {
   match (control.info.kind, get(self.document, control.object, "V")) {
     (Text, Some(s)) => Some(Value::Text(text(s)))
     (Checkbox, Some(PdfNameObject(n))) => Some(Checked(n != name("Off")))
+    (Radio, Some(PdfNameObject(n))) =>
+      if n == name("Off") {
+        None
+      } else {
+        Some(Selected(export_name(n)))
+      }
     (_, None) => None
     _ => fail(key + ": unsupported current value")
   }
@@ -33,10 +45,16 @@ pub fn Form::value(self : Form, key : String) -> Value? raise {
 pub fn values_from_text(source : String) -> Map[String, Value] raise {
   let parsed = @json.parse(source)
   let bytes = @utf8.encode(source)
-  let seen : Map[String, Bool] = Map([])
+  let scopes : Array[Map[String, Bool]] = []
   let mut i = 0
   while i < bytes.length() {
     if bytes[i] != b'"' {
+      if bytes[i] == b'{' {
+        scopes.push(Map([]))
+      }
+      if bytes[i] == b'}' {
+        ignore(scopes.pop())
+      }
       i += 1
       continue
     }
@@ -58,6 +76,8 @@ pub fn values_from_text(source : String) -> Map[String, Value] raise {
         is String(key) else {
         fail("invalid JSON key")
       }
+      guard !scopes.is_empty() else { fail("JSON key outside object") }
+      let seen = scopes[scopes.length() - 1]
       guard !seen.contains(key) else { fail("duplicate field: " + key) }
       seen[key] = true
     }

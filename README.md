@@ -1,5 +1,7 @@
 # FormFerry · 笺舟
 
+Radio groups are supported through `Selected(export_name)` or JSON `{"answer":{"select":"No"}}`. Discover actual exports with `form.choices("answer")`; see [radio groups](docs/radio.md). Existing on/off appearances are reused and all widgets are synchronized.
+
 Fill existing PDF AcroForm controls from MoonBit. Checkboxes select existing appearance states; plain single-line text gets explicit Courier appearance streams. Saving appends an incremental update and retains the original bytes. Other controls remain untouched and cannot be filled.
 
 Import `black-duck666/formferry/form`. Open bytes with `Form::open`, inspect `fields()`, then call `fill({ "approved": Checked(true) })`. Each call returns new bytes; failures do not alter the input or the reusable Form. Unknown names, read-only fields, ambiguous checkbox appearances, XFA, signature fields and calculated forms fail explicitly. Field names currently require printable ASCII. Do not use with hostile inputs without host resource limits; dependency parsing occurs before form-tree limits.
