@@ -2,6 +2,11 @@
 async fn main {
   let args = @env.args()
   match args {
+    [_, "values", path] => {
+      guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
+      let form = @form.Form::open(@fs.read_file(path).binary())
+      println(form.values_json().stringify(indent=2))
+    }
     [_, "batch", input, data, output] => batch(input, data, output)
     [_, "fields", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
@@ -46,7 +51,7 @@ async fn main {
     }
     _ =>
       fail(
-        "usage: formferry fields INPUT.pdf | formferry fill INPUT.pdf VALUES.json NEW.pdf | formferry batch INPUT.pdf RECORDS.json NEW_DIRECTORY",
+        "usage: formferry fields INPUT.pdf | formferry values INPUT.pdf | formferry fill INPUT.pdf VALUES.json NEW.pdf | formferry batch INPUT.pdf RECORDS.json NEW_DIRECTORY",
       )
   }
 }

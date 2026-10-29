@@ -26,7 +26,7 @@ pub fn Form::value(self : Form, key : String) -> Value? raise {
   let fields = self.controls.filter(c => c.info.name == key)
   guard fields.length() == 1 else { fail("unknown field: " + key) }
   let control = fields[0]
-  match (control.info.kind, get(self.document, control.object, "V")) {
+  match (control.info.kind, inherited(self.document, control.object, "V")) {
     (Text, Some(s)) =>
       Some(Value::Text(read_text_value(s, (control.flags & 4096) != 0)))
     (Checkbox, Some(PdfNameObject(n))) => Some(Checked(n != name("Off")))

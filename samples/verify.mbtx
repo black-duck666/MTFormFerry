@@ -21,6 +21,7 @@ async fn main {
   command(base + ["fields","samples/project.pdf"],true)
   command(base + ["fill","samples/project.pdf","samples/project.json",output],true)
   let original = @fs.read_file(output).binary()
+  command(base + ["values",output],true)
   command(base + ["fill","samples/project.pdf","samples/project.json",output],false)
   assert_eq(@fs.read_file(output).binary(),original)
   let bad = dir + "/bad.json"
