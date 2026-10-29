@@ -44,7 +44,7 @@ pub fn Form::value(self : Form, key : String) -> Value? raise {
 
 ///|
 /// Parse a flat JSON mapping and reject duplicate names, including escaped aliases.
-pub fn values_from_text(source : String) -> Map[String, Value] raise {
+fn checked_json(source : String) -> Json raise {
   let parsed = @json.parse(source)
   let bytes = @utf8.encode(source)
   let scopes : Array[Map[String, Bool]] = []
@@ -84,5 +84,30 @@ pub fn values_from_text(source : String) -> Map[String, Value] raise {
       seen[key] = true
     }
   }
-  values_from_json(parsed)
+  parsed
+}
+
+///|
+/// Read a field mapping with duplicate-name rejection in every object scope.
+pub fn values_from_text(source : String) -> Map[String, Value] raise {
+  values_from_json(checked_json(source))
+}
+
+///|
+/// Read one to 32 named-value records. No records are silently skipped.
+pub fn records_from_text(source : String) -> Array[Map[String, Value]] raise {
+  guard checked_json(source) is Array(rows) &&
+    rows.length() >= 1 &&
+    rows.length() <= 32 else {
+    fail("batch needs 1 to 32 JSON records")
+  }
+  let result = []
+  for i, row in rows {
+    result.push(
+      values_from_json(row) catch {
+        e => fail("record \{i+1}: " + e.to_string())
+      },
+    )
+  }
+  result
 }

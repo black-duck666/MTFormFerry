@@ -14,6 +14,7 @@ async fn command(args : Array[String], success : Bool) -> Unit {
 async fn main {
   let target = @env.args().get(1).unwrap_or("wasm")
   command(["run","samples/make_template.mbtx"],true)
+  command(["run","samples/make_choices.mbtx"],true)
   let dir = @fs.tmpdir(prefix="formferry-e2e-")
   let output = dir + "/completed.pdf"
   let base = ["run","bin/formferry","--target",target,"--"]
@@ -32,5 +33,15 @@ async fn main {
   command(base + ["fill","samples/project.pdf",bad,refused],false)
   assert_false(@fs.exists(refused))
   command(base + ["fill","samples/project.pdf","samples/project.json","samples/project.pdf"],false)
+  let batch = dir + "/batch"
+  command(base + ["batch","samples/choices.pdf","samples/batch.json",batch],true)
+  assert_true(@fs.exists(batch+"/0001.pdf"))
+  assert_true(@fs.exists(batch+"/0002.pdf"))
+  command(base + ["batch","samples/choices.pdf","samples/batch.json",batch],false)
+  let rejected_batch = dir + "/bad-batch"
+  @fs.write_file(bad,"[{\"project\":\"valid\"},{\"missing\":true}]")
+  command(base + ["batch","samples/choices.pdf",bad,rejected_batch],false)
+  assert_false(@fs.exists(rejected_batch))
+  assert_false(@fs.exists(rejected_batch+".formferry-part"))
   println("CLI verified; result: " + output)
 }

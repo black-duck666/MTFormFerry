@@ -1,0 +1,26 @@
+----
+import {
+ "moonbitlang/async@0.22.5",
+ "moonbitlang/async@0.22.5/fs",
+ "moonbitlang/pdflite@0.4.1" @pdf,
+ "moonbitlang/pdflite@0.4.1/syntax" @syntax,
+ "moonbitlang/pdflite@0.4.1/core" @core,
+ "moonbitlang/core/encoding/utf8",
+}
+----
+fn n(s : String) -> @core.PdfName { @core.pdf_name_of_bytes(@utf8.encode("/"+s)) }
+fn parse(s : String) -> @syntax.PdfObject raise { @syntax.pdf_parse_object_from_bytes(@utf8.encode(s)) }
+async fn main {
+ let d = @pdf.pdf_read_document_from_bytes(@fs.read_file("samples/project.pdf").binary())
+ d.add_object_given_number(2,parse("<< /Type /Pages /Kids [3 0 R 14 0 R] /Count 2 >>"))
+ d.add_object_given_number(14,parse("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 300] /Resources << /Font << /F1 9 0 R >> >> /Contents 15 0 R /Annots [17 0 R 18 0 R 19 0 R] >>"))
+ let content = @utf8.encode("BT /F1 16 Tf 30 265 Td (Delivery options) Tj /F1 12 Tf 150 0 Td 0 -55 Td (Keep) Tj 150 0 Td (Send) Tj -300 -100 Td (Shipping) Tj ET\n")
+ d.add_object_given_number(15,@syntax.pdf_stream(PdfDictionary([(n("Length"),PdfInteger(content.length()))]),StreamGot(content)))
+ d.add_object_given_number(16,parse("<< /FT /Btn /Ff 32768 /T (decision) /Kids [17 0 R 18 0 R] >>"))
+ d.add_object_given_number(17,parse("<< /Subtype /Widget /Parent 16 0 R /Rect [150 200 170 220] /AS /Off /AP << /N << /Off 11 0 R /Keep 12 0 R >> >> >>"))
+ d.add_object_given_number(18,parse("<< /Subtype /Widget /Parent 16 0 R /Rect [300 200 320 220] /AS /Off /AP << /N << /Off 11 0 R /Send 12 0 R >> >> >>"))
+ d.add_object_given_number(19,parse("<< /Subtype /Widget /FT /Ch /Ff 131072 /T (delivery) /Rect [150 100 550 125] /Opt [(Standard) [(exp) (Express)]] >>"))
+ let acro = d.direct(PdfIndirect(4))
+ d.add_object_given_number(4,acro.add_dict_entry(n("Fields"),PdfArray([PdfIndirect(5),PdfIndirect(6),PdfIndirect(7),PdfIndirect(8),PdfIndirect(13),PdfIndirect(16),PdfIndirect(19)])))
+ @fs.write_file("samples/choices.pdf",@pdf.pdf_write_document(d))
+}

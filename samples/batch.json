@@ -1,0 +1,4 @@
+[
+  {"project":"FormFerry","owner":"black-duck666","source":"https://github.com/black-duck666/MTFormFerry","approved":true,"notes":"Core library registration.\nPrintable ASCII profile.","decision":{"select":"Keep"},"delivery":{"select":"Standard"}},
+  {"project":"FormFerry CLI","owner":"black-duck666","source":"https://github.com/black-duck666/MTFormFerry","approved":false,"notes":"Separate file workflow record.\nOriginal template retained.","decision":{"select":"Send"},"delivery":{"select":"exp"}}
+]

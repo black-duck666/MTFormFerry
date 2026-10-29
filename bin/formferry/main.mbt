@@ -2,6 +2,7 @@
 async fn main {
   let args = @env.args()
   match args {
+    [_, "batch", input, data, output] => batch(input, data, output)
     [_, "fields", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
       let form = @form.Form::open(@fs.read_file(path).binary())
@@ -9,6 +10,9 @@ async fn main {
         println(
           "\{field.name}\t\{Repr(field.kind)}\tread_only=\{field.read_only}",
         )
+        if field.kind is (Radio | Dropdown) {
+          println("  choices: " + form.choices(field.name).join(", "))
+        }
       }
     }
     [_, "fill", input, data, output] => {
@@ -42,7 +46,7 @@ async fn main {
     }
     _ =>
       fail(
-        "usage: formferry fields INPUT.pdf | formferry fill INPUT.pdf VALUES.json NEW.pdf",
+        "usage: formferry fields INPUT.pdf | formferry fill INPUT.pdf VALUES.json NEW.pdf | formferry batch INPUT.pdf RECORDS.json NEW_DIRECTORY",
       )
   }
 }

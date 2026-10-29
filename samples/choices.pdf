@@ -1,0 +1,102 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R /AcroForm 4 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 14 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 300] /Resources << /Font << /F1 9 0 R >> >> /Contents 10 0 R /Annots [5 0 R 6 0 R 7 0 R 8 0 R 13 0 R] >>
+endobj
+4 0 obj
+<< /Fields [5 0 R 6 0 R 7 0 R 8 0 R 13 0 R 16 0 R 19 0 R] /DR << /Font << /F1 9 0 R >> >> /DA (/F1 12 Tf 0 g) >>
+endobj
+5 0 obj
+<< /Subtype /Widget /FT /Tx /T (project) /Rect [90 210 550 235] >>
+endobj
+6 0 obj
+<< /Subtype /Widget /FT /Tx /T (owner) /Rect [90 160 550 185] >>
+endobj
+7 0 obj
+<< /Subtype /Widget /FT /Tx /T (source) /Rect [90 110 550 135] >>
+endobj
+8 0 obj
+<< /Subtype /Widget /FT /Btn /T (approved) /Rect [90 60 110 80] /AS /Off /V /Off /AP << /N << /Off 11 0 R /Yes 12 0 R >> >> >>
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+10 0 obj
+<< /Length 168 >>
+stream
+BT /F1 16 Tf 30 265 Td (Project registration) Tj /F1 12 Tf 0 -45 Td (Project) Tj 0 -50 Td (Owner) Tj 0 -50 Td (Source) Tj 0 -50 Td (Approved) Tj 0 -35 Td (Notes) Tj ET
+
+endstream
+endobj
+11 0 obj
+<< /Type /XObject /Subtype /Form /BBox [0 0 20 20] /Length 15 >>
+stream
+0 0 20 20 re S
+
+endstream
+endobj
+12 0 obj
+<< /Type /XObject /Subtype /Form /BBox [0 0 20 20] /Length 38 >>
+stream
+0 0 20 20 re S 3 10 m 8 4 l 17 17 l S
+
+endstream
+endobj
+13 0 obj
+<< /Subtype /Widget /FT /Tx /Ff 4096 /T (notes) /Rect [150 15 550 55] >>
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 300] /Resources << /Font << /F1 9 0 R >> >> /Contents 15 0 R /Annots [17 0 R 18 0 R 19 0 R] >>
+endobj
+15 0 obj
+<< /Length 132 >>
+stream
+BT /F1 16 Tf 30 265 Td (Delivery options) Tj /F1 12 Tf 150 0 Td 0 -55 Td (Keep) Tj 150 0 Td (Send) Tj -300 -100 Td (Shipping) Tj ET
+
+endstream
+endobj
+16 0 obj
+<< /FT /Btn /Ff 32768 /T (decision) /Kids [17 0 R 18 0 R] >>
+endobj
+17 0 obj
+<< /Subtype /Widget /Parent 16 0 R /Rect [150 200 170 220] /AS /Off /AP << /N << /Off 11 0 R /Keep 12 0 R >> >> >>
+endobj
+18 0 obj
+<< /Subtype /Widget /Parent 16 0 R /Rect [300 200 320 220] /AS /Off /AP << /N << /Off 11 0 R /Send 12 0 R >> >> >>
+endobj
+19 0 obj
+<< /Subtype /Widget /FT /Ch /Ff 131072 /T (delivery) /Rect [150 100 550 125] /Opt [(Standard) [(exp) (Express)]] >>
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000015 00000 n 
+0000000080 00000 n 
+0000000144 00000 n 
+0000000312 00000 n 
+0000000440 00000 n 
+0000000522 00000 n 
+0000000602 00000 n 
+0000000683 00000 n 
+0000000825 00000 n 
+0000000893 00000 n 
+0000001113 00000 n 
+0000001227 00000 n 
+0000001364 00000 n 
+0000001453 00000 n 
+0000001612 00000 n 
+0000001796 00000 n 
+0000001873 00000 n 
+0000002004 00000 n 
+0000002135 00000 n 
+trailer
+<< /Size 20 /Root 1 0 R >>
+startxref
+2267
+%%EOF
