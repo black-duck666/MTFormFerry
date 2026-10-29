@@ -24,6 +24,7 @@ struct Control {
   number : Int32
   object : @syntax.PdfObject
   widgets : Array[(Int32, @syntax.PdfObject)]
+  flags : Int32
 }
 
 ///|
@@ -165,6 +166,7 @@ fn scan(
       number,
       object: obj,
       widgets,
+      flags,
     })
   }
 }

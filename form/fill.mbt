@@ -48,13 +48,21 @@ fn checkbox(
 /// Return a new PDF. Errors never mutate this Form or its input bytes.
 pub fn Form::fill(self : Form, values : Map[String, Value]) -> Bytes raise {
   let doc = @pdf.pdf_read_document_from_bytes(self.original)
-  for key, value in values {
+  for key, _ in values {
+    guard self.controls.any(c => c.info.name == key) else {
+      fail("unknown field: " + key)
+    }
+  }
+  for control in self.controls {
+    let key = control.info.name
+    guard values.get(key) is Some(value) else { continue }
     let candidates = self.controls.filter(c => c.info.name == key)
     guard candidates.length() == 1 else { fail("unknown field: " + key) }
     let control = candidates[0]
     guard !control.info.read_only else { fail(key + ": field is read-only") }
     match (control.info.kind, value) {
       (Checkbox, Checked(b)) => checkbox(doc, control, b)
+      (Text, Text(s)) => fill_text(doc, control, s)
       _ => fail(key + ": unsupported field/value combination")
     }
   }

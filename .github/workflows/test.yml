@@ -24,8 +24,8 @@ jobs:
         if: runner.os == 'Windows'
       - uses: hustcer/setup-moonbit@87e2bdf5cf20d3b6f5c5f266a8a513f503bb5b76
         with:
-          version: '0.1.20261023'
-          core-version: '0.1.20261023'
+          version: 'latest'
+          core-version: 'latest'
       - run: moon version --all
       - run: moon update
       - run: moon fmt --check
