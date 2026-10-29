@@ -91,7 +91,7 @@ test "reject layout overflow and unsupported text flags" {
   )
   doc.add_object_given_number(
     8,
-    obj.add_dict_entry(name("Ff"), PdfInteger(4096)),
+    obj.add_dict_entry(name("Ff"), PdfInteger(8192)),
   )
   let form = Form::open(@pdf.pdf_write_document(doc))
   assert_true(

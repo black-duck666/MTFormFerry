@@ -27,16 +27,21 @@ fn fill_text(
   stored_value? : String,
   choice~ : Bool = false,
 ) -> Unit raise {
+  let multiline = !choice && (control.flags & 4096) != 0
   guard (
       choice &&
       control.flags >= 131072 &&
       (control.flags & 131079) == control.flags
     ) ||
-    (!choice && control.flags >= 0 && control.flags <= 7) else {
-    fail(control.info.name + ": only plain single-line text is supported")
+    (!choice && control.flags >= 0 && (control.flags & 4103) == control.flags) else {
+    fail(control.info.name + ": unsupported plain text flags")
   }
   guard value.length() <= 4096 &&
-    value.iter().all(c => c.to_int() >= 32 && c.to_int() <= 126) else {
+    value
+    .iter()
+    .all(c => {
+      (c.to_int() >= 32 && c.to_int() <= 126) || (multiline && c == '\n')
+    }) else {
     fail(
       control.info.name +
       ": text requires printable ASCII, at most 4096 characters",
@@ -93,11 +98,11 @@ fn fill_text(
       fail(control.info.name + ": invalid widget dimensions")
     }
     let size = if height - 4.0 < 12.0 { height - 4.0 } else { 12.0 }
-    guard value.length().to_double() * size * 0.6 <= width - 4.0 else {
-      fail(control.info.name + ": text would overflow at the plain 12pt style")
+    let operators = text_operators(value, width, height, size, multiline) catch {
+      e => fail(control.info.name + ": " + e.to_string())
     }
     let content = @utf8.encode(
-      "q 0 0 \{width} \{height} re W n BT /FormFerryCourier \{size} Tf 0 g 2 3 Td (\{ascii_literal(value)}) Tj ET Q\n",
+      "q 0 0 \{width} \{height} re W n BT /FormFerryCourier \{size} Tf 0 g \{operators} ET Q\n",
     )
     let stream = @syntax.pdf_stream(
       PdfDictionary([
