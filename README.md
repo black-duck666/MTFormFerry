@@ -1,5 +1,7 @@
 # FormFerry · 笺舟
 
+[Template alignment](docs/alignment.md) preserves left, centered and right-aligned text, including inherited settings and each multiline row.
+
 [Value snapshots](docs/values.md) export existing supported values as deterministic JSON for review and reuse; inconsistent button appearances and unsupported controls are refused.
 
 [Completion checks](docs/completion.md) distinguish drafts from completed applications: list missing Required fields, or fill with `complete=true` before publishing an individual PDF or a batch.
@@ -26,6 +28,6 @@ For actual files, run `moon run bin/formferry --target wasm -- fields INPUT.pdf`
 
 The core is tested on Wasm, Wasm-GC and JavaScript locally. GitHub CI also executes native tests on Linux, macOS and Windows (MSVC). The first implementation baseline was moon 0.1.20261023 / moonc 0.10.17+d971670cd; CI follows the current stable `latest` compiler/core and pins the installer action. This is source distribution, not yet a Mooncakes release.
 
-Text uses an explicit plain style: black Courier, left aligned, up to 12pt with 2pt horizontal inset. This replaces the edited widget's normal appearance, rather than preserving its original typography. Printable ASCII (plus LF on Multiline fields) only; comb/password/rich-text flags, rotated controls, rollover/down appearances, MaxLen violations and overflow fail. Non-ASCII text is rejected before any file is written. This profile does not promise arbitrary PDF or font compatibility.
+Text uses an explicit plain style: black Courier, template `/Q` horizontal alignment, up to 12pt with 2pt horizontal inset. This replaces the edited widget's normal appearance, rather than preserving its original typography. Printable ASCII (plus LF on Multiline fields) only; comb/password/rich-text flags, rotated controls, rollover/down appearances, MaxLen violations and overflow fail. Non-ASCII text is rejected before any file is written. This profile does not promise arbitrary PDF or font compatibility.
 
 Roadmap: multi-selection/scrolling and Unicode font policies; richer text styling; optional flattening. Capabilities are delivered as complete tested slices.

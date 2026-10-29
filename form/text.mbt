@@ -30,6 +30,7 @@ fn fill_text(
   list_index~ : Int32 = -1,
 ) -> Unit raise {
   let multiline = !choice && (control.flags & 4096) != 0
+  let alignment = if choice { 0 } else { text_alignment(doc, control) }
   guard (
       choice &&
       (
@@ -115,7 +116,14 @@ fn fill_text(
         e => fail(control.info.name + ": " + e.to_string())
       }
     } else {
-      let operators = text_operators(value, width, height, size, multiline) catch {
+      let operators = text_operators(
+        value,
+        width,
+        height,
+        size,
+        multiline,
+        alignment~,
+      ) catch {
         e => fail(control.info.name + ": " + e.to_string())
       }
       "BT /FormFerryCourier \{size} Tf 0 g \{operators} ET"
@@ -163,5 +171,22 @@ fn fill_text(
       control.number,
       control.object.add_dict_entry(name("V"), PdfString(stored)),
     )
+  }
+}
+
+///|
+fn text_alignment(doc : @pdf.PdfDocument, c : Control) -> Int32 raise {
+  let q = match inherited(doc, c.object, "Q") {
+    Some(v) => Some(v)
+    None =>
+      match get(doc, doc.catalog(), "AcroForm") {
+        Some(acro) => get(doc, acro, "Q")
+        None => None
+      }
+  }
+  match q {
+    None => 0
+    Some(PdfInteger(n)) if n >= 0 && n <= 2 => n
+    _ => fail(c.info.name + ": Q must be 0 (left), 1 (center) or 2 (right)")
   }
 }
