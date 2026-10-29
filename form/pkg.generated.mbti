@@ -40,6 +40,8 @@ pub fn Form::reset(Self, Array[String], complete? : Bool, fit_text? : Bool) -> B
 pub fn Form::schema_json(Self) -> Json raise
 pub fn Form::validate(Self, Map[String, Value], complete? : Bool, fit_text? : Bool) -> Array[ValidationIssue] raise
 pub fn Form::value(Self, String) -> Value? raise
+pub fn Form::values_fdf(Self) -> Bytes raise
+pub fn Form::values_from_fdf(Self, Bytes) -> Map[String, Value] raise
 pub fn Form::values_json(Self) -> Json raise
 
 pub(all) enum Kind {

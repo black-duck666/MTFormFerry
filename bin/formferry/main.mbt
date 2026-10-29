@@ -15,10 +15,32 @@ async fn main {
       | "reset"
       | "validate"
       | "validate-complete"
+      | "fill-fdf"
     ) else {
     fail("--fit-text is only supported for fill, batch and reset commands")
   }
   match args {
+    [_, "export-fdf", input, output] => {
+      guard @fs.file_size(input) <= 33554432L else {
+        fail("PDF exceeds 32 MiB")
+      }
+      let bytes = @form.Form::open(@fs.read_file(input).binary()).values_fdf()
+      publish(bytes, output)
+      println("saved " + output)
+    }
+    [_, "fill-fdf", input, data, output] => {
+      guard !@fs.exists(output) else {
+        fail("output exists; choose a new path")
+      }
+      guard @fs.file_size(input) <= 33554432L && @fs.file_size(data) <= 1048576L else {
+        fail("PDF or FDF exceeds input limit")
+      }
+      let form = @form.Form::open(@fs.read_file(input).binary())
+      let values = form.values_from_fdf(@fs.read_file(data).binary())
+      let bytes = form.fill_batch([values], fit_text~)[0]
+      publish(bytes, output)
+      println("saved verified FDF-filled PDF " + output)
+    }
     [_, "schema", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
       println(

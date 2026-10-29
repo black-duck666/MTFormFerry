@@ -63,6 +63,11 @@ async fn main {
   command(base + ["batch-csv-complete","samples/choices.pdf","samples/batch.csv",csv_batch],true)
   assert_true(@fs.exists(csv_batch+"/0002.pdf"))
   command(base + ["values",csv_batch+"/0002.pdf"],true)
+  let fdf = dir + "/values.fdf"
+  let from_fdf = dir + "/from-fdf.pdf"
+  command(base + ["export-fdf",csv_batch+"/0002.pdf",fdf],true)
+  command(base + ["fill-fdf","samples/choices.pdf",fdf,from_fdf],true)
+  assert_eq(@fs.read_file(from_fdf).binary(),@fs.read_file(csv_batch+"/0002.pdf").binary())
   let reset = dir + "/reset.pdf"
   command(base + ["reset",csv_batch+"/0002.pdf","samples/reset.json",reset],true)
   command(base + ["values",reset],true)

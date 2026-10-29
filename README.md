@@ -6,6 +6,8 @@
 
 [Template metadata](docs/schema.md) exports real field constraints and choice labels for building an input mapper or review screen.
 
+[FDF value exchange](docs/fdf.md) exports and imports a strict values-only FDF 1.2 profile, feeding the same verified PDF workflow.
+
 [Template alignment](docs/alignment.md) preserves left, centered and right-aligned text, including inherited settings and each multiline row.
 
 [Optional text fitting](docs/fit.md) shrinks overflowing ASCII text down to a 6pt floor while retaining the exact value; the default still rejects overflow.
