@@ -31,6 +31,7 @@ fn fill_text(
   fit_text~ : Bool = false,
 ) -> Unit raise {
   let multiline = !choice && (control.flags & 4096) != 0
+  let comb = !choice && (control.flags & 16777216) != 0
   let alignment = if choice { 0 } else { text_alignment(doc, control) }
   guard (
       choice &&
@@ -47,7 +48,15 @@ fn fill_text(
         )
       )
     ) ||
-    (!choice && control.flags >= 0 && (control.flags & 4103) == control.flags) else {
+    (
+      !choice &&
+      control.flags >= 0 &&
+      (if comb {
+        (control.flags & 16777223) == control.flags
+      } else {
+        (control.flags & 4103) == control.flags
+      })
+    ) else {
     fail(control.info.name + ": unsupported plain text flags")
   }
   guard value.length() <= 4096 &&
@@ -77,6 +86,16 @@ fn fill_text(
     guard depth < 63 else { fail("cyclic Parent chain") }
   }
   let stored = @utf8.encode(stored_value.unwrap_or(value))
+  let cells = if comb {
+    guard inherited(doc, control.object, "MaxLen") is Some(PdfInteger(n)) &&
+      n > 0 &&
+      n <= 4096 else {
+      fail(control.info.name + ": Comb requires MaxLen in 1..4096")
+    }
+    n
+  } else {
+    0
+  }
   let font = @syntax.PdfDictionary([
     (name("Type"), PdfNameObject(name("Font"))),
     (name("Subtype"), PdfNameObject(name("Type1"))),
@@ -120,15 +139,21 @@ fn fill_text(
       }
       drawing
     } else {
-      let (size, operators) = fitted_layout(
-        value,
-        width,
-        height,
-        size,
-        multiline,
-        alignment,
-        fit_text && !choice,
-      ) catch {
+      let (size, operators) = try {
+        if comb {
+          comb_layout(value, cells, width, size, alignment, fit_text)
+        } else {
+          fitted_layout(
+            value,
+            width,
+            height,
+            size,
+            multiline,
+            alignment,
+            fit_text && !choice,
+          )
+        }
+      } catch {
         e => fail(control.info.name + ": " + e.to_string())
       }
       "BT /FormFerryCourier \{size} Tf 0 g \{operators} ET"

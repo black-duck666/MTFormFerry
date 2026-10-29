@@ -18,6 +18,7 @@ async fn main {
   let dir = @fs.tmpdir(prefix="formferry-e2e-")
   let output = dir + "/completed.pdf"
   let base = ["run","bin/formferry","--target",target,"--"]
+  command(base + ["fill","samples/choices.pdf","samples/comb.json",dir+"/comb.pdf"],true)
   command(base + ["fields","samples/project.pdf"],true)
   command(base + ["fill","samples/project.pdf","samples/project.json",output],true)
   let original = @fs.read_file(output).binary()
