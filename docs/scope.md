@@ -1,0 +1,15 @@
+# Contract and boundaries
+
+Consumers: MoonBit backends producing registration/application PDFs, local batch document tools, maintenance/checklist systems that already have AcroForm templates. Supply a template and named values; inspect fields once, fill multiple independent copies, read back, then save or return bytes. This removes repeated manual typing without implementing a PDF viewer.
+
+`Form::open(Bytes)` discovers a bounded field tree. `fields()` returns name, kind and read-only state. `fill(Map[String,Value])` produces a new PDF; no writes escape on a rejected transaction. `value(name)` reads supported current values. `values_from_json(Json)` accepts strings and booleans only. Public interfaces are generated in `form/pkg.generated.mbti`.
+
+Input PDF limit: 32 MiB; tree depth below 64; 4096 visited field nodes; printable ASCII partial names (no periods), combined with periods for hierarchy. Input is parsed by pdflite before tree validation: host memory/time confinement remains necessary for untrusted files. CLI JSON is capped at 1 MiB. `values_from_text` and the CLI reject duplicate keys including Unicode-escaped aliases; `values_from_json` accepts the already-materialized MoonBit JSON object model.
+
+Supported writes: existing checkbox normal appearances with exactly one on-state and an Off state; single-line printable ASCII text with plain Courier rendering. Text MaxLen and read-only flags are honored. All widgets of a supported multi-widget field are updated. Other field kinds remain intact and requesting an update fails. No field creation or scanned-page recognition.
+
+Rejected: XFA, signature fields/certification, encryption, calculation order and field/document actions; non-ASCII text, unsupported text flags/rotation, incompatible appearances, invalid rectangles and overflow. Errors identify the field where practical. Custom typography is replaced for edited text by the documented plain style. Unknown PDF objects are retained through incremental writing; no sanitization, removal of old values, signature preservation or redaction is promised. Earlier revisions remain in the output.
+
+Determinism is relative to the same input bytes, values and pinned dependency versions. Filling order follows the source field tree rather than map insertion order. No globally smallest PDF, performance improvement or universal viewer compatibility is claimed. External render checks supplement structural/readback tests.
+
+Capability ladder: checked existing control filling → portable library and file workflow (current) → choice controls and explicit Unicode font coverage → advanced layout → optional flattening. Each extension requires its own malformed-input, preservation and visual regressions.

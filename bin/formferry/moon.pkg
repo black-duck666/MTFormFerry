@@ -1,0 +1,11 @@
+import {
+  "black-duck666/formferry/form",
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/core/env",
+  "moonbitlang/core/encoding/utf8",
+}
+
+supported_targets = "+wasm+native"
+
+pkgtype(kind: "executable")

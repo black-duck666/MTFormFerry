@@ -122,3 +122,37 @@ test "reject cyclic trees and inherited read-only controls" {
     },
   )
 }
+
+///|
+test "all widgets of one checkbox track the field value" {
+  let doc = @pdf.pdf_read_document_from_bytes(fixture())
+  let original = doc.direct(PdfIndirect(5))
+  let widget = original
+    .remove_dict_entry(name("T"))
+    .remove_dict_entry(name("FT"))
+  doc.add_object_given_number(8, widget)
+  doc.add_object_given_number(9, widget.deep_copy())
+  doc.add_object_given_number(
+    5,
+    PdfDictionary([
+      (name("T"), PdfString(b"approved")),
+      (name("FT"), PdfNameObject(name("Btn"))),
+      (name("Kids"), PdfArray([PdfIndirect(8), PdfIndirect(9)])),
+    ]),
+  )
+  let page = doc.direct(PdfIndirect(3))
+  doc.add_object_given_number(
+    3,
+    page.replace_dict_entry(
+      name("Annots"),
+      PdfArray([PdfIndirect(8), PdfIndirect(9)]),
+    ),
+  )
+  let form = Form::open(@pdf.pdf_write_document(doc))
+  let result = Form::open(form.fill({ "approved": Checked(true) }))
+  assert_eq(result.value("approved"), Some(Checked(true)))
+  assert_eq(result.controls[0].widgets.length(), 2)
+  for (_, w) in result.controls[0].widgets {
+    assert_eq(get(result.document, w, "AS"), Some(PdfNameObject(name("Yes"))))
+  }
+}

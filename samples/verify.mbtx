@@ -1,0 +1,36 @@
+----
+import {
+ "moonbitlang/async@0.22.5",
+ "moonbitlang/async@0.22.5/shell",
+ "moonbitlang/async@0.22.5/fs",
+ "moonbitlang/core/env",
+}
+----
+async fn command(args : Array[String], success : Bool) -> Unit {
+  let r = @shell.Cmd("moon",args).output()
+  println(r.stdout()); println(r.stderr())
+  guard (r.exit_code()==0) == success else { abort("unexpected CLI result") }
+}
+async fn main {
+  let target = @env.args().get(1).unwrap_or("wasm")
+  command(["run","samples/make_template.mbtx"],true)
+  let dir = @fs.tmpdir(prefix="formferry-e2e-")
+  let output = dir + "/completed.pdf"
+  let base = ["run","bin/formferry","--target",target,"--"]
+  command(base + ["fields","samples/project.pdf"],true)
+  command(base + ["fill","samples/project.pdf","samples/project.json",output],true)
+  let original = @fs.read_file(output).binary()
+  command(base + ["fill","samples/project.pdf","samples/project.json",output],false)
+  assert_eq(@fs.read_file(output).binary(),original)
+  let bad = dir + "/bad.json"
+  let refused = dir + "/refused.pdf"
+  @fs.write_file(bad,"{\"missing\":true}")
+  command(base + ["fill","samples/project.pdf",bad,refused],false)
+  assert_false(@fs.exists(refused))
+  assert_false(@fs.exists(refused+".formferry-part"))
+  @fs.write_file(bad,"{\"project\":\"中文\"}")
+  command(base + ["fill","samples/project.pdf",bad,refused],false)
+  assert_false(@fs.exists(refused))
+  command(base + ["fill","samples/project.pdf","samples/project.json","samples/project.pdf"],false)
+  println("CLI verified; result: " + output)
+}

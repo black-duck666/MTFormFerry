@@ -3,10 +3,12 @@ package "black-duck666/formferry/form"
 
 import {
   "moonbitlang/core/debug",
-  "moonbitlang/pdflite",
 }
 
 // Values
+pub fn values_from_json(Json) -> Map[String, Value] raise
+
+pub fn values_from_text(String) -> Map[String, Value] raise
 
 // Errors
 
@@ -23,13 +25,12 @@ pub fn Field::not_equal(Self, Self) -> Bool
 pub fn Field::to_repr(Self) -> @debug.Repr
 
 pub struct Form {
-  original : Bytes
-  document : @pdflite.PdfDocument
-  controls : Array[Control]
+  // private fields
 }
 pub fn Form::fields(Self) -> Array[Field]
 pub fn Form::fill(Self, Map[String, Value]) -> Bytes raise
 pub fn Form::open(Bytes) -> Self raise
+pub fn Form::value(Self, String) -> Value? raise
 
 pub(all) enum Kind {
   Text

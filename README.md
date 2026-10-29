@@ -8,6 +8,10 @@ This is an AcroForm semantic layer over `moonbitlang/pdflite@0.4.1`, not a PDF r
 
 Run `moon test --target wasm`, or select `wasm-gc`, `js`, `native`. Native tests must execute on a configured native C toolchain. Formatting and API files are produced by `moon fmt` and `moon info`.
 
+For actual files, run `moon run bin/formferry --target wasm -- fields INPUT.pdf`, then `moon run bin/formferry --target wasm -- fill INPUT.pdf VALUES.json NEW.pdf`. JSON is a flat object of strings and booleans. Existing output paths are refused. See [the complete example](samples/README.md); run `moon run samples/verify.mbtx wasm` for success, readback, overwrite rejection and recovery checks. A native CLI uses the same arguments with `--target native`.
+
+The core is tested on Wasm, Wasm-GC and JavaScript locally. GitHub CI also executes native tests on Linux, macOS and Windows (MSVC). The first implementation baseline was moon 0.1.20261023 / moonc 0.10.17+d971670cd; CI follows the current stable `latest` compiler/core and pins the installer action. This is source distribution, not yet a Mooncakes release.
+
 Text uses an explicit plain style: black Courier, left aligned, up to 12pt with 2pt horizontal inset. This replaces the edited widget's normal appearance, rather than preserving its original typography. Printable ASCII only; multiline, comb/password/rich-text flags, rotated controls, rollover/down appearances, MaxLen violations and overflow fail. Non-ASCII text is rejected before any file is written. This profile does not promise arbitrary PDF or font compatibility.
 
-Roadmap: a file/JSON command workflow; choice controls and Unicode font policies; optional flattening. Capabilities are delivered as complete tested slices.
+Roadmap: choice controls and Unicode font policies; richer text layout and styling; optional flattening. Capabilities are delivered as complete tested slices.

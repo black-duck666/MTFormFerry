@@ -29,9 +29,9 @@ struct Control {
 
 ///|
 pub struct Form {
-  original : Bytes
-  document : @pdf.PdfDocument
-  controls : Array[Control]
+  priv original : Bytes
+  priv document : @pdf.PdfDocument
+  priv controls : Array[Control]
 }
 
 ///|
@@ -139,6 +139,7 @@ fn scan(
     } else {
       let result = []
       for kid in kids {
+        guard seen.length() < 4096 else { fail("form tree exceeds limits") }
         guard kid is PdfIndirect(n) && !seen.contains(n) else {
           fail("invalid or shared widget")
         }

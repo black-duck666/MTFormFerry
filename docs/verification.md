@@ -1,0 +1,13 @@
+# Verification record
+
+Local baseline: Windows, moon 0.1.20261023, moonc 0.10.17+d971670cd. Source was formatted, interfaces generated, and warning-denying checks/tests executed for Wasm, Wasm-GC and JavaScript. The local Windows machine lacks MSVC: native compilation with MinGW is not supported by this MoonBit runtime and was not reported as a native pass.
+
+The second commit's GitHub run https://github.com/black-duck666/MTFormFerry/actions/runs/40793347076 executed all six matrix jobs successfully, including native tests on Linux, macOS and Windows/MSVC. The initial run failed in installer setup because an invalid date-based archive name was supplied; the installer now selects the current stable compiler/core.
+
+The file workflow is exercised by `moon run samples/verify.mbtx wasm`. It generates a real one-page AcroForm, fills the repository metadata from `samples/project.json`, reopens all four values before saving, refuses overwriting an existing file, rejects an unknown field and non-ASCII input without publishing an output, then permits subsequent valid calls. CI executes this workflow for Wasm and native.
+
+The generated `_build/registration.pdf` was independently opened with Poppler 26.09.0 (`pdfinfo`, `pdftotext`, `pdftoppm`) and its PNG was visually inspected. All three strings and the checkbox tick were visible, with original labels preserved. The renderer reported missing optional display fonts Symbol/ArialUnicode in its local font configuration; the document uses Courier and no affected glyphs. This one-template check is not a universal viewer compatibility claim.
+
+As a negative external-input check, the public PDF at https://pdf-lib.js.org/assets/dod_character.pdf was downloaded locally and passed to the `fields` command. Its field actions were explicitly rejected. It was not modified or redistributed, and is not evidence of supported complex-form handling.
+
+Tests cover checkbox on/off and multiple widgets, inherited read-only flags, cyclic trees, malformed inputs, text escaping and overflow, MaxLen, missing glyph rejection, unsupported flags, duplicate JSON keys/escaped aliases, readback, byte-prefix preservation, deterministic map order and recovery after rejection. Current scope and limitations are defined in `docs/scope.md`.

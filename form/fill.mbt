@@ -26,17 +26,14 @@ fn checkbox(
     }
     selected = state
     states.push(
-      (number, widget.replace_dict_entry(name("AS"), PdfNameObject(state))),
+      (number, widget.add_dict_entry(name("AS"), PdfNameObject(state))),
     )
   }
-  let field = control.object.replace_dict_entry(
-    name("V"),
-    PdfNameObject(selected),
-  )
+  let field = control.object.add_dict_entry(name("V"), PdfNameObject(selected))
   doc.add_object_given_number(control.number, field)
   for (number, widget) in states {
     let updated = if number == control.number {
-      widget.replace_dict_entry(name("V"), PdfNameObject(selected))
+      widget.add_dict_entry(name("V"), PdfNameObject(selected))
     } else {
       widget
     }
