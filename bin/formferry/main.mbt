@@ -7,7 +7,17 @@ async fn main {
       let form = @form.Form::open(@fs.read_file(path).binary())
       println(form.values_json().stringify(indent=2))
     }
-    [_, "batch", input, data, output] => batch(input, data, output)
+    [_, "check", path] => {
+      guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
+      let form = @form.Form::open(@fs.read_file(path).binary())
+      let missing = form.missing_required()
+      guard missing.is_empty() else {
+        fail("missing required fields: " + missing.join(", "))
+      }
+      println("all Required fields satisfy the FormFerry completion policy")
+    }
+    [_, "batch" | "batch-complete", input, data, output] =>
+      batch(input, data, output, complete=args[1] == "batch-complete")
     [_, "fields", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
       let form = @form.Form::open(@fs.read_file(path).binary())
@@ -20,7 +30,7 @@ async fn main {
         }
       }
     }
-    [_, "fill", input, data, output] => {
+    [_, "fill" | "complete", input, data, output] => {
       guard !@fs.exists(output) else {
         fail("output exists; choose a new path")
       }
@@ -31,7 +41,7 @@ async fn main {
       let values = @form.values_from_text(
         @utf8.decode(@fs.read_file(data).binary()),
       )
-      let bytes = form.fill(values)
+      let bytes = form.fill(values, complete=args[1] == "complete")
       let check = @form.Form::open(bytes)
       for key, value in values {
         guard check.value(key) == Some(value) else {
@@ -51,7 +61,7 @@ async fn main {
     }
     _ =>
       fail(
-        "usage: formferry fields INPUT.pdf | formferry values INPUT.pdf | formferry fill INPUT.pdf VALUES.json NEW.pdf | formferry batch INPUT.pdf RECORDS.json NEW_DIRECTORY",
+        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY",
       )
   }
 }

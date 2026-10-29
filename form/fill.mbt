@@ -43,7 +43,11 @@ fn checkbox(
 
 ///|
 /// Return a new PDF. Errors never mutate this Form or its input bytes.
-pub fn Form::fill(self : Form, values : Map[String, Value]) -> Bytes raise {
+pub fn Form::fill(
+  self : Form,
+  values : Map[String, Value],
+  complete~ : Bool = false,
+) -> Bytes raise {
   let doc = @pdf.pdf_read_document_from_bytes(self.original)
   for key, _ in values {
     guard self.controls.any(c => c.info.name == key) else {
@@ -65,5 +69,12 @@ pub fn Form::fill(self : Form, values : Map[String, Value]) -> Bytes raise {
       _ => fail(key + ": unsupported field/value combination")
     }
   }
-  @pdf.pdf_write_document_incremental_update(self.original, doc)
+  let bytes = @pdf.pdf_write_document_incremental_update(self.original, doc)
+  if complete {
+    let missing = Form::open(bytes).missing_required()
+    guard missing.is_empty() else {
+      fail("missing required fields: " + missing.join(", "))
+    }
+  }
+  bytes
 }

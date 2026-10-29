@@ -22,10 +22,17 @@ async fn main {
   command(base + ["fill","samples/project.pdf","samples/project.json",output],true)
   let original = @fs.read_file(output).binary()
   command(base + ["values",output],true)
+  command(base + ["check","samples/project.pdf"],false)
+  command(base + ["check",output],true)
+  command(base + ["complete","samples/project.pdf","samples/project.json",dir+"/complete.pdf"],true)
   command(base + ["fill","samples/project.pdf","samples/project.json",output],false)
   assert_eq(@fs.read_file(output).binary(),original)
   let bad = dir + "/bad.json"
   let refused = dir + "/refused.pdf"
+  @fs.write_file(bad,"{\"project\":\"draft\"}")
+  command(base + ["complete","samples/project.pdf",bad,refused],false)
+  assert_false(@fs.exists(refused))
+  assert_false(@fs.exists(refused+".formferry-part"))
   @fs.write_file(bad,"{\"missing\":true}")
   command(base + ["fill","samples/project.pdf",bad,refused],false)
   assert_false(@fs.exists(refused))

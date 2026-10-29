@@ -1,0 +1,7 @@
+# Drafts and completed applications
+
+`form.fill(values)` keeps draft behavior. Use `form.fill(values, complete=true)` to refuse a PDF whose Required fields remain missing after all updates. Existing values and inherited field flags/values count; callers need not resend an already-filled value. `form.missing_required()` returns every missing name in field order for a review screen. A required control outside the supported profile raises instead of being silently treated as complete. Read-only Required fields also count and must already be populated.
+
+The explicit FormFerry policy requires non-space/non-LF text, checked checkboxes and a valid selected export for radio/dropdown fields. It does not infer legal consent or application acceptance. This application-level completion policy is stricter than merely checking that `/V` exists. It applies to all Required flags, including NoExport fields; it is not a PDF SubmitForm implementation.
+
+Run `moon run bin/formferry --target wasm -- check completed.pdf` for a nonzero exit and named missing fields, or `complete samples/project.pdf samples/project.json NEW.pdf` to validate before writing. The authored sample marks project and owner Required. `batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY` and `fill_batch(records, complete=true)` enforce the same policy for every record; any failure rejects the entire batch. `moon run samples/verify.mbtx wasm` exercises success, incomplete refusal without file creation and subsequent recovery.

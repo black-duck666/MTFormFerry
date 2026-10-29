@@ -5,6 +5,7 @@
 pub fn Form::fill_batch(
   self : Form,
   records : Array[Map[String, Value]],
+  complete~ : Bool = false,
 ) -> Array[Bytes] raise {
   guard records.length() >= 1 && records.length() <= 32 else {
     fail("batch needs 1 to 32 records")
@@ -12,7 +13,7 @@ pub fn Form::fill_batch(
   let result = []
   let mut total = 0L
   for i, values in records {
-    let bytes = self.fill(values) catch {
+    let bytes = self.fill(values, complete~) catch {
       e => fail("record \{i+1}: " + e.to_string())
     }
     total += bytes.length().to_int64()
