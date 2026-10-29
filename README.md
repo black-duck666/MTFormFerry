@@ -2,6 +2,8 @@
 
 [Comb fields](docs/comb.md) fill fixed character cells for identifiers and reference codes, honoring MaxLen, alignment and optional fitting.
 
+[Preflight validation](docs/validate.md) reports multiple field errors in one pass before saving, including optional Required checks against candidate values.
+
 [Template alignment](docs/alignment.md) preserves left, centered and right-aligned text, including inherited settings and each multiline row.
 
 [Optional text fitting](docs/fit.md) shrinks overflowing ASCII text down to a 6pt floor while retaining the exact value; the default still rejects overflow.

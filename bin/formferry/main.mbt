@@ -13,10 +13,39 @@ async fn main {
       | "batch-csv"
       | "batch-csv-complete"
       | "reset"
+      | "validate"
+      | "validate-complete"
     ) else {
     fail("--fit-text is only supported for fill, batch and reset commands")
   }
   match args {
+    [_, "validate" | "validate-complete", input, data] => {
+      guard @fs.file_size(input) <= 33554432L && @fs.file_size(data) <= 1048576L else {
+        fail("PDF or JSON exceeds input limit")
+      }
+      let form = @form.Form::open(@fs.read_file(input).binary())
+      let values = @form.values_from_text(
+        @utf8.decode(@fs.read_file(data).binary()),
+      )
+      let issues = form.validate(
+        values,
+        complete=args[1] == "validate-complete",
+        fit_text~,
+      )
+      println(
+        Json::array(
+          issues.map(i => {
+            Json::object({
+              "field": Json::string(i.field),
+              "message": Json::string(i.message),
+            })
+          }),
+        ).stringify(indent=2),
+      )
+      guard issues.is_empty() else {
+        fail("validation failed for \{issues.length()} fields")
+      }
+    }
     [_, "reset", input, data, output] => {
       guard !@fs.exists(output) else {
         fail("output exists; choose a new path")

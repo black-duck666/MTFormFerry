@@ -37,6 +37,7 @@ pub fn Form::missing_required(Self) -> Array[String] raise
 pub fn Form::open(Bytes) -> Self raise
 pub fn Form::records_from_csv(Self, String) -> Array[Map[String, Value]] raise
 pub fn Form::reset(Self, Array[String], complete? : Bool, fit_text? : Bool) -> Bytes raise
+pub fn Form::validate(Self, Map[String, Value], complete? : Bool, fit_text? : Bool) -> Array[ValidationIssue] raise
 pub fn Form::value(Self, String) -> Value? raise
 pub fn Form::values_json(Self) -> Json raise
 
@@ -51,6 +52,14 @@ pub(all) enum Kind {
 pub fn Kind::equal(Self, Self) -> Bool
 pub fn Kind::not_equal(Self, Self) -> Bool
 pub fn Kind::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ValidationIssue {
+  field : String
+  message : String
+} derive(Eq, @debug.Debug)
+pub fn ValidationIssue::equal(Self, Self) -> Bool
+pub fn ValidationIssue::not_equal(Self, Self) -> Bool
+pub fn ValidationIssue::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Value {
   Text(String)
