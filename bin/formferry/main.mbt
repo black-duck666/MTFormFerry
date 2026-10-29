@@ -18,6 +18,14 @@ async fn main {
     }
     [_, "batch" | "batch-complete", input, data, output] =>
       batch(input, data, output, complete=args[1] == "batch-complete")
+    [_, "batch-csv" | "batch-csv-complete", input, data, output] =>
+      batch(
+        input,
+        data,
+        output,
+        csv=true,
+        complete=args[1] == "batch-csv-complete",
+      )
     [_, "fields", path] => {
       guard @fs.file_size(path) <= 33554432L else { fail("PDF exceeds 32 MiB") }
       let form = @form.Form::open(@fs.read_file(path).binary())
@@ -61,7 +69,7 @@ async fn main {
     }
     _ =>
       fail(
-        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY",
+        "usage: formferry fields|values|check INPUT.pdf | formferry fill|complete INPUT.pdf VALUES.json NEW.pdf | formferry batch|batch-complete INPUT.pdf RECORDS.json NEW_DIRECTORY | formferry batch-csv|batch-csv-complete INPUT.pdf RECORDS.csv NEW_DIRECTORY",
       )
   }
 }

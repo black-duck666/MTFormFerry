@@ -4,6 +4,8 @@
 
 [Completion checks](docs/completion.md) distinguish drafts from completed applications: list missing Required fields, or fill with `complete=true` before publishing an individual PDF or a batch.
 
+[CSV batches](docs/csv.md) turn headered spreadsheet exports into typed records and verified PDFs, with explicit checkbox/choice conversion and whole-batch failure.
+
 Radio groups are supported through `Selected(export_name)` or JSON `{"answer":{"select":"No"}}`. Discover actual exports with `form.choices("answer")`; see [radio groups](docs/radio.md). Existing on/off appearances are reused and all widgets are synchronized.
 
 [Dropdowns](docs/dropdown.md) also use `Selected(export)`: the stored export and visible label are handled separately. Non-editable single-selection combo boxes are supported; arbitrary editable/list/multi-select controls are rejected.

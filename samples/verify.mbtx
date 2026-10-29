@@ -51,5 +51,13 @@ async fn main {
   command(base + ["batch","samples/choices.pdf",bad,rejected_batch],false)
   assert_false(@fs.exists(rejected_batch))
   assert_false(@fs.exists(rejected_batch+".formferry-part"))
+  let csv_batch = dir + "/csv-batch"
+  command(base + ["batch-csv-complete","samples/choices.pdf","samples/batch.csv",csv_batch],true)
+  assert_true(@fs.exists(csv_batch+"/0002.pdf"))
+  @fs.write_file(bad,"project,owner,approved\nValid,owner,true\nBad,owner,yes")
+  let bad_csv = dir + "/bad-csv"
+  command(base + ["batch-csv","samples/project.pdf",bad,bad_csv],false)
+  assert_false(@fs.exists(bad_csv))
+  assert_false(@fs.exists(bad_csv+".formferry-part"))
   println("CLI verified; result: " + output)
 }

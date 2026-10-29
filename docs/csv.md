@@ -1,0 +1,11 @@
+# Spreadsheet rows to verified PDFs
+
+Run `moon run bin/formferry --target wasm -- batch-csv-complete samples/choices.pdf samples/batch.csv NEW_DIRECTORY`. Each CSV data record becomes a separate verified PDF; all Required fields must be complete. `batch-csv` permits drafts. Directory publication and failure cleanup are the same as JSON batches. No spreadsheets, cloud accounts or private services are required.
+
+For library consumers, call `form.records_from_csv(source)` then `form.fill_batch(records, complete=true)`. Header cells name a writable field exactly, including hierarchical periods. A subset of fields is allowed; omitted columns leave existing values unchanged. An empty text cell explicitly sets empty text. Checkbox cells must be exactly `true` or `false`; selection cells use exports from `choices(name)`, not display labels. No type guessing, trimming, blank-row skipping or formula evaluation occurs.
+
+The bounded input profile follows RFC 4180 comma/quote escaping, with CRLF or LF record separators. Quoted commas, doubled quotes and embedded CR/LF are preserved. Embedded CRLF text consequently fails the current LF-only PDF text profile during filling; conversion never silently normalizes it. Trailing record separator is accepted; a trailing comma denotes an explicit empty final cell. Quotes in unquoted cells, junk after closing quotes, bare CR record separators, duplicate/empty/unknown/read-only headers, column mismatches and unsupported controls fail explicitly.
+
+Limits: printable ASCII plus CR/LF, 1 MiB source, 4096 decoded characters per cell, 4096 columns, one header and 1..32 records. UTF-8 BOM, Unicode, tabs, alternate separators and `.xlsx` files are outside this profile. The API converts records; field layout/MaxLen and completion are checked by `fill_batch` before any CLI output is published. CSV diagnostics use logical record numbers, so a quoted multiline cell still counts as one record.
+
+The private decoder is part of the form import workflow, not a general CSV package. Syntax reference: [RFC 4180](https://www.rfc-editor.org/rfc/rfc4180), consulted without copying code or fixtures. Example rows are project-authored under MIT and use this repository's public metadata; checkbox/choice values are illustrative.

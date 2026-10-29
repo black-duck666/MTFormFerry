@@ -4,17 +4,21 @@ async fn batch(
   data : String,
   output : String,
   complete~ : Bool = false,
+  csv~ : Bool = false,
 ) -> Unit {
   guard !@fs.exists(output) else {
     fail("batch output exists; choose a new directory")
   }
   guard @fs.file_size(input) <= 33554432L && @fs.file_size(data) <= 1048576L else {
-    fail("PDF or JSON exceeds input limit")
+    fail("PDF or data exceeds input limit")
   }
   let form = @form.Form::open(@fs.read_file(input).binary())
-  let records = @form.records_from_text(
-    @utf8.decode(@fs.read_file(data).binary()),
-  )
+  let source = @utf8.decode(@fs.read_file(data).binary())
+  let records = if csv {
+    form.records_from_csv(source)
+  } else {
+    @form.records_from_text(source)
+  }
   let documents = form.fill_batch(records, complete~)
   let staging = output + ".formferry-part"
   @fs.mkdir(staging, permission=0o700, allow_exist=false)
